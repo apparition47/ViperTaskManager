@@ -25,6 +25,8 @@ protocol AddPresenterProtocol: class {
     func selectTask(task: Task)
     func createTask(projectId: Int, callback: ([Task]) -> ())
     func updateProject(project: Project, callback: (result: Project?, error: NSError?) -> ())
+    func updateProjectInPersistentStore(project: Project)
+    func fetchSortBy(projectId: String, callback: (result: String) -> ())
 }
 
 protocol AddInterfaceProtocol: class {
@@ -82,6 +84,16 @@ extension AddPresenter: AddPresenterProtocol {
     func updateProject(project: Project, callback: (result: Project?, error: NSError?) -> ()) {
         self.interactor.updateProject(project) { (result, error) in
             callback(result: result, error: error)
+        }
+    }
+    
+    func updateProjectInPersistentStore(project: Project) {
+        self.interactor.updateProjectInPersistentStore(project)
+    }
+    
+    func fetchSortBy(projectId: String, callback: (result: String) -> ()) {
+        self.interactor.fetchSortBy(projectId) { (result) in
+            callback(result: result)
         }
     }
 }

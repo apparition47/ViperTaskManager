@@ -114,13 +114,36 @@ class AddTableViewController: UITableViewController {
     }
     
     @IBAction func sortBy(sender: AnyObject) {
-//        self.presenter.cancel()
+        self.presenter.fetchSortBy(project.projectId) { (result) in
+            let alert = UIAlertController(title: "Sort By: \(result)",
+                                          message: "Tasks lists can be sorted by title or deadline.",
+                                          preferredStyle: UIAlertControllerStyle.Alert)
+            
+            let title = UIAlertAction(title: "title",
+                                      style: UIAlertActionStyle.Default) { (action: UIAlertAction) in
+                                        let newProject = Project(projectId: self.project.projectId, name: self.project.name, sortBy: "title", tasks: self.project.tasks)
+                                        self.presenter.updateProjectInPersistentStore(newProject)
+                                        
+            }
+            
+            let deadline = UIAlertAction(title: "deadline",
+                                         style: UIAlertActionStyle.Default) { (action: UIAlertAction) in
+                                            let newProject = Project(projectId: self.project.projectId, name: self.project.name, sortBy: "deadline", tasks: self.project.tasks)
+                                            self.presenter.updateProjectInPersistentStore(newProject)
+            }
+            
+            let cancel = UIAlertAction(title: "Cancel",
+                                       style: UIAlertActionStyle.Cancel,
+                                       handler: nil)
+            
+            alert.addAction(title)
+            alert.addAction(deadline)
+            alert.addAction(cancel)
+            
+            self.presentViewController(alert, animated: true, completion: nil)
+        }
     }
-    
-    @IBAction func deleteProject(sender: AnyObject) {
-        //        self.presenter.cancel()
-    }
-    
+
     @IBAction func editProjectName(sender: AnyObject) {
         let alert = UIAlertController(title: "New Project",
                                       message: "Type in a name",

@@ -30,12 +30,7 @@
             <objects>
                 <tableViewController storyboardIdentifier="AddTableViewControllerID" id="J7E-QJ-YgD" customClass="AddTableViewController" customModule="ViperTaskManager" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems>
-                        <barButtonItem title="Delete Project" id="Ifu-Dk-4xt">
-                            <connections>
-                                <action selector="deleteProject:" destination="J7E-QJ-YgD" id="iRo-a1-wUh"/>
-                            </connections>
-                        </barButtonItem>
-                        <barButtonItem title="Edit Name" id="NYe-Al-Tif">
+                        <barButtonItem title="Edit Project Name" id="NYe-Al-Tif">
                             <connections>
                                 <action selector="editProjectName:" destination="J7E-QJ-YgD" id="TEC-Lh-WXI"/>
                             </connections>

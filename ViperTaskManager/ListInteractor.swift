@@ -53,6 +53,9 @@ extension ListInteractor: ListInteractorInputProtocol {
     func createProject(name: String, callback: (result: Project?, error: NSError?) -> ()) {
         dataManager.createProject(name) { (result, error) -> Void in
             callback(result: result, error: error)
+            if (error == nil) {
+                self.dataManager.saveProjectInPersistentStore(result!)
+            }
         }
     }
 }

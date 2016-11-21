@@ -18,6 +18,8 @@ protocol AddInteractorInputProtocol: class {
 //    func getCitiesWithName(name: String)
 //    func saveProject(project: Project)
     func updateProject(project: Project, callback: (result: Project?, error: NSError?) -> ())
+    func updateProjectInPersistentStore(project: Project)
+    func fetchSortBy(projectId: String, callback: (result: String) -> ())
 }
 
 protocol AddInteractorOutputProtocol: class {
@@ -47,6 +49,16 @@ extension AddInteractor: AddInteractorInputProtocol {
     func updateProject(project: Project, callback: (result: Project?, error: NSError?) -> ()) {
         self.dataManager.updateProject(project) { (result, error) in
             callback(result: result, error: error)
+        }
+    }
+    
+    func updateProjectInPersistentStore(project: Project) {
+        self.dataManager.updateProjectInPersistentStore(project)
+    }
+    
+    func fetchSortBy(projectId: String, callback: (result: String) -> ()) {
+        self.dataManager.fetchProjectFromPersistentStore(projectId) { result in
+            callback(result: result.sortBy)
         }
     }
 }

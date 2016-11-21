@@ -18,6 +18,7 @@ protocol ListDataManagerInputProtocol: class {
 //    func fetchCitiesFromPersistentStore(callback: ([Task]) -> ())
 //    func removeTaskFromPersistentStore(task: Task)
     func fetchProjects(callback: (result: [Project], error: NSError?) -> ())
+    func saveProjectInPersistentStore(project: Project)
     func removeProjectFromPersistentStore(project: Project)
     func createProject(name: String, callback: (result: Project?, error: NSError?) -> ())
     func removeProject(project: Project, callback: (error: NSError?) -> ())
@@ -105,6 +106,17 @@ extension ListDataManager: ListDataManagerInputProtocol {
         callback(projects)
     }
     
+    func saveProjectInPersistentStore(project: Project) {
+        let realm = try! Realm()
+        realm.beginWrite()
+        
+        let projectEntity = ProjectEntity(project: project)
+        
+        realm.addWithNotification(projectEntity, update: false)
+        
+        try! realm.commitWrite()
+    }
+    
     func removeProjectFromPersistentStore(project: Project) {
         let realm = try! Realm()
 
@@ -161,4 +173,5 @@ extension ListDataManager: ListDataManagerInputProtocol {
             }
         }
     }
+    
 }

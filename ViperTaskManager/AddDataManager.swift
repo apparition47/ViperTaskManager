@@ -19,6 +19,8 @@ protocol AddDataManagerInputProtocol: class {
 //    func fetchCitiesWithName(name: String, callback: ([Task]) -> ())
     func saveTaskToPersistentStore(task: Task)
     func updateProject(project: Project, callback: (result: Project?, error: NSError?) -> ())
+    func updateProjectInPersistentStore(project: Project)
+    func fetchProjectFromPersistentStore(projectId: String, callback: (result: Project) -> ())
 }
 
 protocol AddDataManagerOutputProtocol: class {
@@ -109,4 +111,37 @@ extension AddDataManager: AddDataManagerInputProtocol {
         }
     }
     
+    // name and sortBy only
+    func updateProjectInPersistentStore(project: Project) {
+        let realm = try! Realm()
+        realm.beginWrite()
+        
+        let predicate = NSPredicate(format: "projectId = %@", argumentArray: [project.projectId])
+        let projectEntity = realm.objects(ProjectEntity).filter(predicate)[0]
+        
+        projectEntity.name = project.name
+        projectEntity.sortBy = project.sortBy
+        
+        realm.addWithNotification(projectEntity, update: true)
+        
+        try! realm.commitWrite()
+    }
+    
+    // mainly to get the sortBy field
+    func fetchProjectFromPersistentStore(projectId: String, callback: (result: Project) -> ()) {
+        let realm = try! Realm()
+        
+        let predicate = NSPredicate(format: "projectId = %@", argumentArray: [projectId])
+        let firstProject = realm.objects(ProjectEntity).filter(predicate)[0]
+
+        var tasks: [Task] = []
+        for taskEntity in firstProject.tasks {
+            let city = Task(taskId: taskEntity.taskId, projectId: taskEntity.projectId, title: taskEntity.title, deadline: taskEntity.deadline, completed: taskEntity.completed)
+            tasks.append(city)
+        }
+        
+        let project = Project(projectId: firstProject.projectId, name: firstProject.name, sortBy: firstProject.sortBy, tasks: tasks)
+        
+        callback(result: project)
+    }
 }
