@@ -12,15 +12,15 @@ PODS:
     - RBQFetchedResultsController (>= 3.0.1)
     - RealmSwift (>= 0.96)
   - SwiftyJSON (2.3.2)
-  - Swinject (1.1.0)
+  - Swinject (1.1.5)
 
 DEPENDENCIES:
   - Alamofire (~> 3.5.0)
-  - RealmSwift
+  - RealmSwift (~> 0.98.5)
   - SnapKit (~> 0.22.0)
-  - SwiftFetchedResultsController
-  - SwiftyJSON
-  - Swinject
+  - SwiftFetchedResultsController (~> 3.0.1)
+  - SwiftyJSON (~> 2.3.2)
+  - Swinject (~> 1.1.5)
 
 SPEC CHECKSUMS:
   Alamofire: 0dfba1184a543e2aa160f4e39cac4e8aba48d223
@@ -30,8 +30,8 @@ SPEC CHECKSUMS:
   SnapKit: 0dd2fd157330f1ea11fd84da13e6be8a7a22bae0
   SwiftFetchedResultsController: 646da58a5cde2293b692f5c8283d1db001d720bc
   SwiftyJSON: 04ccea08915aa0109039157c7974cf0298da292a
-  Swinject: 514e56e46e3cd362f2cca07bb6ad1fdbed9abbfa
+  Swinject: 49b2b23850829e0a6074681264dcb1aa64c0dbca
 
-PODFILE CHECKSUM: 3729d9256d769502a246855f9538e3eefdd5d264
+PODFILE CHECKSUM: 090d4fddad85b1a00a24101bde8fbe108b1914e6
 
 COCOAPODS: 1.1.1

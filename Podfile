@@ -6,13 +6,13 @@ use_frameworks!
 target 'ViperTaskManager' do
 
 
-pod 'Swinject'
+pod 'Swinject', '~> 1.1.5'
 pod 'Alamofire', '~> 3.5.0'
 
-pod 'RealmSwift'
-pod 'SwiftFetchedResultsController'
+pod 'RealmSwift', '~> 0.98.5'
+pod 'SwiftFetchedResultsController', '~> 3.0.1'
 
-pod 'SwiftyJSON'
+pod 'SwiftyJSON', '~> 2.3.2'
 
 # Will used soon
 pod 'SnapKit', '~> 0.22.0'
