@@ -37,12 +37,12 @@ class ListContainer: AssemblyType {
             return interactor
         }
         
-//        container.register(ListRouterInputProtocol.self) { (r) in
-//            let router = ListRouter()
-//            router.addAssembler = r.resolve(AddAssembler.self)!
+        container.register(ListRouterInputProtocol.self) { (r) in
+            let router = ListRouter()
+            router.addAssembler = r.resolve(AddAssembler.self)!
 //            router.detailContainerAssembler = r.resolve(DetailContainerAssembler.self)!
-//            return router
-//        }
+            return router
+        }
         
         container.register(ListDataManagerInputProtocol.self) { (r) in
             let dataManager = ListDataManager()

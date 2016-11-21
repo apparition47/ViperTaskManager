@@ -16,7 +16,8 @@ protocol AddInteractorInputProtocol: class {
     weak var presenter: AddInteractorOutputProtocol! { get set }
 
 //    func getCitiesWithName(name: String)
-    func saveProject(project: Project)
+//    func saveProject(project: Project)
+    func updateProject(project: Project, callback: (result: Project?, error: NSError?) -> ())
 }
 
 protocol AddInteractorOutputProtocol: class {
@@ -43,8 +44,10 @@ extension AddInteractor: AddInteractorInputProtocol {
         self.dataManager.saveTaskToPersistentStore(task)
     }
     
-    func saveProject(project: Project) {
-        
+    func updateProject(project: Project, callback: (result: Project?, error: NSError?) -> ()) {
+        self.dataManager.updateProject(project) { (result, error) in
+            callback(result: result, error: error)
+        }
     }
 }
 

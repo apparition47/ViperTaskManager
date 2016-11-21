@@ -16,7 +16,7 @@ protocol ListPresenterProtocol: class {
     func showDetailProject(project: Project)
     func addNewProject(name: String)
     func exit()
-    func removeProject(project: Project)
+    func removeProject(project: Project, callback: (error: NSError?) -> ())
 }
 
 protocol ListInterfaceProtocol: class {
@@ -52,15 +52,17 @@ extension ListPresenter: ListPresenterProtocol {
         self.router.presentDetailViewController(fromViewController: self.interface as! UIViewController, project: project)
     }
     
-    func removeProject(project: Project) {
-        self.interactor.removeProject(project)
+    func removeProject(project: Project, callback: (error: NSError?) -> ()) {
+        self.interactor.removeProject(project) { (error) -> Void in
+            callback(error: error)
+        }
     }
     
     func addNewProject(name: String) {
 //        self.router.presentAddViewController(fromViewController: self.interface as! UIViewController)
         self.interactor.createProject(name) { (result, error) -> Void in
-            if ((error) != nil) {
-                
+            if (error != nil) {
+                print("error what")
             } else {
                 self.router.presentDetailViewController(fromViewController: self.interface as! UIViewController, project: result!)
             }

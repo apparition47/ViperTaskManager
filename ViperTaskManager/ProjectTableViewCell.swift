@@ -12,8 +12,10 @@ class ProjectTableViewCell: UITableViewCell {
 
     var project: Project? {
         didSet {
-            nameLabel.text = project!.name
-            unfinishedTasksLabel.text = "\(project!.getUnfinishedTaskCount())"
+            if let project = project {
+                nameLabel.text = project.name
+                unfinishedTasksLabel.text = "\(project.getUnfinishedTaskCount()) / \(project.tasks.count)"
+            }
         }
     }
     

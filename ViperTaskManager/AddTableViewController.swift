@@ -53,6 +53,14 @@ class AddTableViewController: UITableViewController {
 
 //        searchController.searchBar.sizeToFit()
 //        searchController.active = true
+        
+        self.navigationController?.toolbarHidden = false
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        self.title = project.name
     }
 
     // MARK: - Table view data source
@@ -114,7 +122,41 @@ class AddTableViewController: UITableViewController {
     }
     
     @IBAction func editProjectName(sender: AnyObject) {
-        //        self.presenter.cancel()
+        let alert = UIAlertController(title: "New Project",
+                                      message: "Type in a name",
+                                      preferredStyle: UIAlertControllerStyle.Alert)
+        
+        let ok = UIAlertAction(title: "OK",
+                               style: UIAlertActionStyle.Default) { (action: UIAlertAction) in
+                                
+            if let alertTextField = alert.textFields?.first where alertTextField.text != nil {
+                
+                print("And the text is... \(alertTextField.text!)!")
+                
+                let newProject = Project(projectId: self.project.projectId, name: alertTextField.text!, sortBy: self.project.sortBy, tasks: self.project.tasks)
+                
+                self.presenter.updateProject(newProject, callback: { (result, error) in
+                    if (error == nil) {
+                        self.title = result?.name
+                    } else {
+                        print("failed to update project name")
+                    }
+                })
+            }
+        }
+        
+        let cancel = UIAlertAction(title: "Cancel",
+                                   style: UIAlertActionStyle.Cancel,
+                                   handler: nil)
+        
+        alert.addTextFieldWithConfigurationHandler { (textField: UITextField) in
+            textField.placeholder = ""
+        }
+        
+        alert.addAction(ok)
+        alert.addAction(cancel)
+        
+        self.presentViewController(alert, animated: true, completion: nil)
     }
     
     @IBAction func addTask(sender: AnyObject) {

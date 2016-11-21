@@ -24,6 +24,7 @@ protocol AddPresenterProtocol: class {
 //    func getCitiesWithName(name: String?)
     func selectTask(task: Task)
     func createTask(projectId: Int, callback: ([Task]) -> ())
+    func updateProject(project: Project, callback: (result: Project?, error: NSError?) -> ())
 }
 
 protocol AddInterfaceProtocol: class {
@@ -76,6 +77,12 @@ extension AddPresenter: AddPresenterProtocol {
     func createTask(projectId: Int, callback: ([Task]) -> ()) {
 //        self.delegate?.addViewControllerDidSelectTask(task)
         self.router.closeAddViewController(viewController: interface as! UIViewController)
+    }
+    
+    func updateProject(project: Project, callback: (result: Project?, error: NSError?) -> ()) {
+        self.interactor.updateProject(project) { (result, error) in
+            callback(result: result, error: error)
+        }
     }
 }
 

@@ -18,6 +18,7 @@ protocol AddDataManagerInputProtocol: class {
     
 //    func fetchCitiesWithName(name: String, callback: ([Task]) -> ())
     func saveTaskToPersistentStore(task: Task)
+    func updateProject(project: Project, callback: (result: Project?, error: NSError?) -> ())
 }
 
 protocol AddDataManagerOutputProtocol: class {
@@ -38,7 +39,7 @@ extension AddDataManager: AddDataManagerInputProtocol {
 //        let url = "https://maps.googleapis.com/maps/api/place/autocomplete/json"
 //        let parameters = ["input": "\(name)", "types": "(tasks)", "key": googleMapKey]
 //        
-//        Alamofire.Manager.sharedInstance.request(method, url, parameters: parameters, encoding: ParameterEncoding.URL, headers: nil).responseJSON { (response) -> Void in
+//        Alamofire.Manager.sharedInstance.request(method, url, parameters: parameters, encoding: ParameterEncoding.URLEncodedInURL, headers: nil).responseJSON { (response) -> Void in
 //            switch response.result {
 //            case .Success(let JSON):
 //                let predictions = JSON["predictions"] as! [[String: AnyObject]]
@@ -79,6 +80,33 @@ extension AddDataManager: AddDataManagerInputProtocol {
         realm.addWithNotification(entity, update: false)
         
         try! realm.commitWrite()
+    }
+    
+    func updateProject(project: Project, callback: (result: Project?, error: NSError?) -> ()) {
+        let method = Alamofire.Method.PATCH
+        let url = tasksServerEndpoint + "projects/" + project.projectId
+        let parameters = ["name": "\(project.name)"]
+        
+        Alamofire.Manager.sharedInstance.request(method, url, parameters: parameters, encoding: ParameterEncoding.URLEncodedInURL, headers: nil).responseJSON { (response) -> Void in
+            switch response.result {
+            case .Success(let JSON):
+                let projectJson = JSON as! [String: AnyObject]
+                let tasksJson = projectJson["tasks"] as! [[String: AnyObject]]
+                var tasks: [Task] = []
+                for taskJson in tasksJson {
+                    let task = Task(taskId: taskJson["id"] as! String, projectId: taskJson["project_id"] as! String, title: taskJson["title"] as! String, deadline: NSDate(timeIntervalSince1970: NSTimeInterval(taskJson["deadline"] as! Int)), completed: taskJson["completed"] as! Bool)
+                    tasks.append(task)
+                }
+                
+                let project = Project(projectId: projectJson["id"] as! String, name: projectJson["name"] as! String, sortBy: "title", tasks: tasks)
+                
+                callback(result: project, error: nil)
+                
+            case .Failure(let error):
+                print(error)
+                callback(result: nil, error: error)
+            }
+        }
     }
     
 }

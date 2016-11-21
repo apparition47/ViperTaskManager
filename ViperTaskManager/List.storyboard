@@ -69,7 +69,7 @@
         <!--Detail List View Controller-->
         <scene sceneID="tXv-79-OZE">
             <objects>
-                <viewController storyboardIdentifier="DetailListViewControllerID" id="WuA-lf-TfV" customClass="DetailListViewController" customModule="ViperWeather" customModuleProvider="target" sceneMemberID="viewController"/>
+                <viewController storyboardIdentifier="DetailListViewControllerID" id="WuA-lf-TfV" customClass="DetailListViewController" customModule="ViperTaskManager" customModuleProvider="target" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="d4S-ig-pfH" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1498" y="359"/>

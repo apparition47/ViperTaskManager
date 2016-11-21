@@ -14,7 +14,7 @@ protocol ListInteractorInputProtocol: class {
     weak var presenter: ListInteractorOutputProtocol! { get set }
     
     func fetchProjects(callback: ([Project]) -> ())
-    func removeProject(project: Project)
+    func removeProject(project: Project, callback: (error: NSError?) -> ())
     func createProject(name: String, callback: (result: Project?, error: NSError?) -> ())
 }
 
@@ -43,8 +43,11 @@ extension ListInteractor: ListInteractorInputProtocol {
     }
     
     
-    func removeProject(project: Project) {
-        dataManager.removeProjectFromPersistentStore(project)
+    func removeProject(project: Project, callback: (error: NSError?) -> ()) {
+//        dataManager.removeProjectFromPersistentStore(project)
+        dataManager.removeProject(project) { (error) in
+            callback(error: error)
+        }
     }
     
     func createProject(name: String, callback: (result: Project?, error: NSError?) -> ()) {

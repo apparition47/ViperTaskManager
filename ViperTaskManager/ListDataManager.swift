@@ -20,6 +20,7 @@ protocol ListDataManagerInputProtocol: class {
     func fetchProjects(callback: (result: [Project], error: NSError?) -> ())
     func removeProjectFromPersistentStore(project: Project)
     func createProject(name: String, callback: (result: Project?, error: NSError?) -> ())
+    func removeProject(project: Project, callback: (error: NSError?) -> ())
 }
 
 protocol ListDataManagerOutputProtocol: class {
@@ -66,13 +67,13 @@ extension ListDataManager: ListDataManagerInputProtocol {
         let method = Alamofire.Method.GET
         let url = tasksServerEndpoint + "projects"
         
-        Alamofire.Manager.sharedInstance.request(method, url, parameters: nil, encoding: ParameterEncoding.URL, headers: nil).responseJSON { (response) -> Void in
+        Alamofire.Manager.sharedInstance.request(method, url, parameters: nil, encoding: ParameterEncoding.URLEncodedInURL, headers: nil).responseJSON { (response) -> Void in
             switch response.result {
             case .Success(let JSON):
                 let projectsJson = JSON as! [[String: AnyObject]]
                 var projects: [Project] = []
                 for projectJson in projectsJson {
-                    let tasksJson = JSON["tasks"] as! [[String: AnyObject]]
+                    let tasksJson = JSON["tasks"] as? [[String: AnyObject]] ?? []
                     var tasks: [Task] = []
                     for taskJson in tasksJson {
                         let task = Task(taskId: taskJson["id"] as! String, projectId: taskJson["project_id"] as! String, title: taskJson["title"] as! String, deadline: NSDate(timeIntervalSince1970: NSTimeInterval(taskJson["deadline"] as! Int)), completed: taskJson["completed"] as! Bool)
@@ -85,7 +86,7 @@ extension ListDataManager: ListDataManagerInputProtocol {
                 
             case .Failure(let error):
                 print(error)
-                callback(result: [], error: NSError(domain: "ofg", code: 500, userInfo: nil))
+                callback(result: [], error: error)
             }
         }
     }
@@ -120,9 +121,9 @@ extension ListDataManager: ListDataManagerInputProtocol {
     func createProject(name: String, callback: (result: Project?, error: NSError?) -> ()) {
         let method = Alamofire.Method.POST
         let url = tasksServerEndpoint + "projects"
-        let parameters: [String:AnyObject] = ["name": name]
+        let parameters: [String:AnyObject] = ["name": "\(name)"]
         
-        Alamofire.Manager.sharedInstance.request(method, url, parameters: parameters, encoding: ParameterEncoding.URL, headers: nil).responseJSON { (response) -> Void in
+        Alamofire.Manager.sharedInstance.request(method, url, parameters: parameters, encoding: ParameterEncoding.URLEncodedInURL, headers: nil).responseJSON { (response) -> Void in
             switch response.result {
             case .Success(let JSON):
                 let projectJson = JSON as! [String: AnyObject]
@@ -139,9 +140,25 @@ extension ListDataManager: ListDataManagerInputProtocol {
                 
             case .Failure(let error):
                 print(error)
-                callback(result: nil, error: NSError(domain: "ofg", code: 500, userInfo: nil))
+                callback(result: nil, error: error)
             }
         }
     }
     
+    func removeProject(project: Project, callback: (error: NSError?) -> ()) {
+        let method = Alamofire.Method.DELETE
+        let url = tasksServerEndpoint + "projects/" + project.projectId
+//        let parameters: [String:AnyObject] = ["id": project.projectId]
+        
+        Alamofire.Manager.sharedInstance.request(method, url, parameters: nil, encoding: ParameterEncoding.URLEncodedInURL, headers: nil).responseString { (response) -> Void in
+            switch response.result {
+            case .Success(let _):
+                callback(error: nil)
+                
+            case .Failure(let error):
+                print(error)
+                callback(error: error)
+            }
+        }
+    }
 }

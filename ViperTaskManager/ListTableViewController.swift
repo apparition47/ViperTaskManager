@@ -43,21 +43,28 @@ class ListTableViewController: UITableViewController {
         tableView.estimatedRowHeight = UITableViewAutomaticDimension
         tableView.rowHeight = UITableViewAutomaticDimension
         
+//        self.navigationItem.rightBarButtonItems!.append(self.editButtonItem())
+        self.navigationItem.rightBarButtonItems = []
         self.navigationItem.rightBarButtonItems!.append(self.editButtonItem())
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
         
         self.presenter.fetchProjects() { (result: [Project]) -> Void in
             self.projects = result
+            self.tableView.reloadData()
         }
         
         // TODO refactor to comply with VIPER
-//        let realm = try! Realm()
-//        let predicate = NSPredicate(format: "projectId != %@", "0")
-//        let fetchRequest = FetchRequest<TaskEntity>(realm: realm, predicate: predicate)
-//        let sortDescriptor = SortDescriptor(property: "name", ascending: true)
-//        fetchRequest.sortDescriptors = [sortDescriptor]
-//        self.taskFetchedResultsController = FetchedResultsController<TaskEntity>(fetchRequest: fetchRequest, sectionNameKeyPath: nil, cacheName: nil)
-//        self.taskFetchedResultsController!.delegate = self
-//        self.taskFetchedResultsController!.performFetch()
+        //        let realm = try! Realm()
+        //        let predicate = NSPredicate(format: "projectId != %@", "0")
+        //        let fetchRequest = FetchRequest<TaskEntity>(realm: realm, predicate: predicate)
+        //        let sortDescriptor = SortDescriptor(property: "name", ascending: true)
+        //        fetchRequest.sortDescriptors = [sortDescriptor]
+        //        self.taskFetchedResultsController = FetchedResultsController<TaskEntity>(fetchRequest: fetchRequest, sectionNameKeyPath: nil, cacheName: nil)
+        //        self.taskFetchedResultsController!.delegate = self
+        //        self.taskFetchedResultsController!.performFetch()
     }
     
     override func didReceiveMemoryWarning() {
@@ -157,10 +164,16 @@ class ListTableViewController: UITableViewController {
 //                }
 //            case 1:
                 let project = projects[indexPath.row]
-                self.presenter.removeProject(project)
+            self.presenter.removeProject(project) { (error) -> Void in
+                if (error == nil) {
+                    self.projects.removeAtIndex(indexPath.row)
+                    tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+                } else {
+                    print("delete project error")
+                }
+            }
                 
-                projects.removeAtIndex(indexPath.row)
-                tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+
 //            default:
 //                fatalError("Wrong section")
 //            }

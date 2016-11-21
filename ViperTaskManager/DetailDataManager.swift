@@ -39,7 +39,7 @@ extension DetailDataManager: DetailDataManagerInputProtocol {
 //        let url = "https://maps.googleapis.com/maps/api/place/details/json"
 //        let parameters = ["placeid": "\(task.placeID)", "key": googleMapKey]
 //        
-//        Alamofire.Manager.sharedInstance.request(method, url, parameters: parameters, encoding: ParameterEncoding.URL, headers: nil).responseJSON { (response) -> Void in
+//        Alamofire.Manager.sharedInstance.request(method, url, parameters: parameters, encoding: ParameterEncoding.URLEncodedInURL, headers: nil).responseJSON { (response) -> Void in
 //            switch response.result {
 //            case .Success(let JSON):
 //                let result = JSON["result"] as! [String: AnyObject]
@@ -62,7 +62,7 @@ extension DetailDataManager: DetailDataManagerInputProtocol {
 //        let url = "http://api.openweathermap.org/data/2.5/forecast"
 //        let parameters: [String: AnyObject] = ["lat": task.lat, "lon": task.lng, "units": "metric", "cnt": 1, "APPID": openWeatherMapKey]
 //        
-//        Alamofire.Manager.sharedInstance.request(method, url, parameters: parameters, encoding: ParameterEncoding.URL, headers: nil).responseJSON { (response) -> Void in
+//        Alamofire.Manager.sharedInstance.request(method, url, parameters: parameters, encoding: ParameterEncoding.URLEncodedInURL, headers: nil).responseJSON { (response) -> Void in
 //            switch response.result {
 //            case .Success(let JSON):
 //                guard let list = JSON["list"] as? [[String: AnyObject]] else {
