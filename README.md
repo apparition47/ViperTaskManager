@@ -19,7 +19,28 @@ Written in Swift using VIPER. Tested on Xcode 8, iOS 10.1.
 ## How to use
 
 1. Setup and run [TasksServer](https://github.com/Lang-8/TasksServer).
-2. If intending to run TasksServer and your app on different devices, open `Constants.swift` and edit `tasksServerEndpoint = "http://<TASK SERVER URL>" + ":8090" + "/"`.
+2. If you're not running the app and the server on `localhost`, edit the following:
+
+`Constants.swift`
+```swift
+let tasksServerEndpoint = "http://<TASK SERVER URL>" + ":8090" + "/"
+```
+
+`Info.plist`
+```xml
+<key>NSAppTransportSecurity</key>
+<dict>
+	<key>NSExceptionDomains</key>
+	<dict>
+		<key>TASK SERVER DOMAIN HERE></key>
+		<dict>
+			<key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+			<true/>
+		</dict>
+	</dict>
+</dict>
+```
+
 3. Ensure you have CocoaPods then `pod install`
 4. Run the app.
 
