@@ -27,6 +27,8 @@ protocol AddPresenterProtocol: class {
     func updateProject(project: Project, callback: (result: Project?, error: NSError?) -> ())
     func updateProjectInPersistentStore(project: Project)
     func fetchSortBy(projectId: String, callback: (result: String) -> ())
+    
+    func addNewTask(projectId: String, title: String)
 }
 
 protocol AddInterfaceProtocol: class {
@@ -94,6 +96,17 @@ extension AddPresenter: AddPresenterProtocol {
     func fetchSortBy(projectId: String, callback: (result: String) -> ()) {
         self.interactor.fetchSortBy(projectId) { (result) in
             callback(result: result)
+        }
+    }
+    
+    func addNewTask(projectId: String, title: String) {
+        //        self.router.presentAddViewController(fromViewController: self.interface as! UIViewController)
+        self.interactor.createTask(projectId, title: title) { (result, error) -> Void in
+            if (error != nil) {
+                print("error what")
+            } else {
+                self.router.presentDetailViewController(fromViewController: self.interface as! UIViewController, task: result!)
+            }
         }
     }
 }

@@ -47,6 +47,13 @@ class AddContainer: AssemblyType {
             let dataManager = AddDataManager()
             return dataManager
         }
+        
+//        container.register(DetailAssembler.self) { r in
+//            let parentAssembler = r.resolve(AddAssembler.self)!
+//            return DetailAssembler(parentAssembler: parentAssembler)
+//        }
+
+        
     }
     
 }

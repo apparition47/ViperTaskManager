@@ -21,6 +21,7 @@ protocol AddDataManagerInputProtocol: class {
     func updateProject(project: Project, callback: (result: Project?, error: NSError?) -> ())
     func updateProjectInPersistentStore(project: Project)
     func fetchProjectFromPersistentStore(projectId: String, callback: (result: Project) -> ())
+    func createTask(projectId: String, title: String, callback: (result: Task?, error: NSError?) -> ())
 }
 
 protocol AddDataManagerOutputProtocol: class {
@@ -143,5 +144,27 @@ extension AddDataManager: AddDataManagerInputProtocol {
         let project = Project(projectId: firstProject.projectId, name: firstProject.name, sortBy: firstProject.sortBy, tasks: tasks)
         
         callback(result: project)
+    }
+    
+    func createTask(projectId: String, title: String, callback: (result: Task?, error: NSError?) -> ()) {
+        let method = Alamofire.Method.POST
+        let url = tasksServerEndpoint + "projects/" + projectId + "/tasks"
+        let parameters: [String:AnyObject] = ["title": "\(title)"]
+        
+        Alamofire.Manager.sharedInstance.request(method, url, parameters: parameters, encoding: ParameterEncoding.URLEncodedInURL, headers: nil).responseJSON { (response) -> Void in
+            switch response.result {
+            case .Success(let JSON):
+                let taskJson = JSON as! [String: AnyObject]
+                
+                // taskJson["deadline"] as! Int is null???
+                let task = Task(taskId: taskJson["id"] as! String, projectId: taskJson["project_id"] as! String, title: taskJson["title"] as! String, deadline: NSDate(timeIntervalSince1970: 0), completed: taskJson["completed"] as! Bool)
+                
+                callback(result: task, error: nil)
+                
+            case .Failure(let error):
+                print(error)
+                callback(result: nil, error: error)
+            }
+        }
     }
 }

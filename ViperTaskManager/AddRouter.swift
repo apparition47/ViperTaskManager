@@ -12,6 +12,9 @@ import UIKit
 
 protocol AddRouterInputProtocol: class {
     func closeAddViewController(viewController viewController: UIViewController)
+    func presentDetailViewController(fromViewController fromViewController: UIViewController, task: Task)
+    
+    var detailAssembler: DetailAssembler! { get set }
 }
 
 protocol AddParentRouterProtocol: class {
@@ -20,6 +23,8 @@ protocol AddParentRouterProtocol: class {
 
 class AddRouter: AddRouterInputProtocol {
 
+    var detailAssembler: DetailAssembler!
+    
     func closeAddViewController(viewController viewController: UIViewController) {
         let idiom = UIDevice.currentDevice().userInterfaceIdiom
         switch idiom {
@@ -32,5 +37,9 @@ class AddRouter: AddRouterInputProtocol {
         default:
             fatalError("Device is not supported yet")
         }
+    }
+    
+    func presentDetailViewController(fromViewController fromViewController: UIViewController, task: Task) {
+        detailAssembler.presentDetailViewController(fromViewController: fromViewController, task: task)
     }
 }

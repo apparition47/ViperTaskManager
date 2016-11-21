@@ -58,5 +58,6 @@ class ListContainer: AssemblyType {
 //            let parentAssembler = r.resolve(ListAssembler.self)!
 //            return DetailContainerAssembler(parentAssembler: parentAssembler)
 //        }
+
     }
 }

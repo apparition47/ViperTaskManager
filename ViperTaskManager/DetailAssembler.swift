@@ -19,11 +19,37 @@ class DetailAssembler: Assembler {
 
 extension DetailAssembler {
     
+//    func presentDetailViewController(fromViewController fromViewController: UIViewController, task: Task) {
+//        let viewController = self.viewController()
+//        viewController.task = task
+//        
+//        fromViewController.navigationController!.pushViewController(viewController, animated: true)
+//    }
+    
     func presentDetailViewController(fromViewController fromViewController: UIViewController, task: Task) {
-        let viewController = self.viewController()
+        let viewController = storyboard().instantiateViewControllerWithIdentifier("DetailListViewControllerID") as! DetailViewController
         viewController.task = task
         
-        fromViewController.navigationController!.pushViewController(viewController, animated: true)
+        let navigationController = UINavigationController(rootViewController: viewController)
+        
+        let idiom = UIDevice.currentDevice().userInterfaceIdiom
+        switch idiom {
+        case .Phone:
+            fromViewController.presentViewController(navigationController, animated: true, completion: nil)
+            
+        case .Pad:
+            let splitViewController = UISplitViewController()
+            let detailNavigationController = UINavigationController()
+            splitViewController.viewControllers = [navigationController, detailNavigationController]
+            
+            splitViewController.presentsWithGesture = false
+            splitViewController.preferredDisplayMode = .AllVisible
+            
+            fromViewController.presentViewController(splitViewController, animated: true, completion: nil)
+            
+        default:
+            fatalError("Device is not supported yet")
+        }
     }
     
 //    func presentDetailViewController(fromViewController fromViewController: UIViewController, inView view: UIView, task: Task) {
@@ -51,7 +77,7 @@ extension DetailAssembler {
     }
     
     func viewController() -> DetailViewController {
-        return storyboard().instantiateViewControllerWithIdentifier("DetailViewControllerID") as! DetailViewController
+        return storyboard().instantiateViewControllerWithIdentifier("DetailListViewControllerID") as! DetailViewController
     }
     
 }

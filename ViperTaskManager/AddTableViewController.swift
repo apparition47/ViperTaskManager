@@ -183,7 +183,32 @@ class AddTableViewController: UITableViewController {
     }
     
     @IBAction func addTask(sender: AnyObject) {
-        //        self.presenter.cancel()
+        let alert = UIAlertController(title: "New Task",
+                                      message: "Type in a title",
+                                      preferredStyle: UIAlertControllerStyle.Alert)
+        
+        let ok = UIAlertAction(title: "OK",
+                               style: UIAlertActionStyle.Default) { (action: UIAlertAction) in
+                                
+                                if let alertTextField = alert.textFields?.first where alertTextField.text != nil {
+                                    
+                                    print("And the text is... \(alertTextField.text!)!")
+                                    self.presenter.addNewTask(self.project.projectId, title: alertTextField.text!)
+                                }
+        }
+        
+        let cancel = UIAlertAction(title: "Cancel",
+                                   style: UIAlertActionStyle.Cancel,
+                                   handler: nil)
+        
+        alert.addTextFieldWithConfigurationHandler { (textField: UITextField) in
+            textField.placeholder = ""
+        }
+        
+        alert.addAction(ok)
+        alert.addAction(cancel)
+        
+        self.presentViewController(alert, animated: true, completion: nil)
     }
 }
 
