@@ -2,7 +2,7 @@
 //  ListDataManager.swift
 //  ViperTaskManager
 //
-//  Created by Aaron Lee on 02/03/16.
+//  Created by Aaron Lee on 19/11/16.
 //  Copyright © 2016 One Fat Giraffe. All rights reserved.
 //
 
@@ -15,13 +15,13 @@ protocol ListDataManagerInputProtocol: class {
     
     weak var interactor: ListDataManagerOutputProtocol! { get set }
     
-//    func fetchCitiesFromPersistentStore(callback: ([Task]) -> ())
-//    func removeTaskFromPersistentStore(task: Task)
+    func fetchProjectsFromPersistentStore(callback: ([Project]) -> ())
     func fetchProjects(callback: (result: [Project], error: NSError?) -> ())
     func saveProjectInPersistentStore(project: Project)
     func removeProjectFromPersistentStore(project: Project)
     func createProject(name: String, callback: (result: Project?, error: NSError?) -> ())
     func removeProject(project: Project, callback: (error: NSError?) -> ())
+    func syncProjectsToPersistentStore(projects: [Project])
 }
 
 protocol ListDataManagerOutputProtocol: class {
@@ -36,33 +36,6 @@ class ListDataManager {
 }
 
 extension ListDataManager: ListDataManagerInputProtocol {
-    
-//    func fetchCitiesFromPersistentStore(callback: ([Task]) -> ()) {
-//        let realm = try! Realm()
-//
-//        let taskEntities = realm.objects(TaskEntity)
-//        
-//        var tasks: [Task] = []
-//        for taskEntity in taskEntities {
-//            let task = Task(title: taskEntity.title, ID: taskEntity.ID, placeID: taskEntity.placeID, lat: taskEntity.lat, lng: taskEntity.lng)
-//            tasks.append(task)
-//        }
-//        callback(tasks)
-//    }
-//    
-//    func removeTaskFromPersistentStore(task: Task) {
-//        let realm = try! Realm()
-//
-//        realm.beginWrite()
-//
-//        let predicate = NSPredicate(format: "ID = %@", argumentArray: [task.ID])
-//        let taskEntities = realm.objects(TaskEntity).filter(predicate)
-//        
-//        realm.deleteWithNotification(taskEntities)
-//
-//        try! realm.commitWrite()
-//    }
-    
     
     func fetchProjects(callback: (result: [Project], error: NSError?) -> ()) {
         let method = Alamofire.Method.GET
@@ -130,7 +103,7 @@ extension ListDataManager: ListDataManagerInputProtocol {
 
         realm.beginWrite()
 
-        let predicate = NSPredicate(format: "ID = %@", argumentArray: [project.projectId])
+        let predicate = NSPredicate(format: "projectId = %@", argumentArray: [project.projectId])
         let projectEntities = realm.objects(ProjectEntity).filter(predicate)
 
         realm.deleteWithNotification(projectEntities)
@@ -168,7 +141,6 @@ extension ListDataManager: ListDataManagerInputProtocol {
     func removeProject(project: Project, callback: (error: NSError?) -> ()) {
         let method = Alamofire.Method.DELETE
         let url = tasksServerEndpoint + "projects/" + project.projectId
-//        let parameters: [String:AnyObject] = ["id": project.projectId]
         
         Alamofire.Manager.sharedInstance.request(method, url, parameters: nil, encoding: ParameterEncoding.URLEncodedInURL, headers: nil).responseString { (response) -> Void in
             switch response.result {
@@ -180,6 +152,23 @@ extension ListDataManager: ListDataManagerInputProtocol {
                 callback(error: error)
             }
         }
+    }
+    
+    func syncProjectsToPersistentStore(projects: [Project]) {
+        let realm = try! Realm()
+        
+        realm.beginWrite()
+        
+        // delete all projects
+        realm.deleteAll()
+        
+        // write new ones
+        for project in projects {
+            let projectEntity = ProjectEntity(project: project)
+            realm.addWithNotification(projectEntity, update: false)
+        }
+        
+        try! realm.commitWrite()
     }
     
 }

@@ -2,7 +2,7 @@
 //  ListTableViewController.swift
 //  ViperTaskManager
 //
-//  Created by Aaron Lee on 29/02/16.
+//  Created by Aaron Lee on 19/11/16.
 //  Copyright © 2016 One Fat Giraffe. All rights reserved.
 //
 
@@ -87,63 +87,45 @@ class ListTableViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        switch section {
-//        case 0:
-//            return projectFetchedResultsController.numberOfRowsForSectionIndex(section)
-//        case 1:
+        switch section {
+        case 0:
             return projects.count
-//        default:
-//            fatalError("Wrong section")
-//        }
+        
+        default:
+            fatalError("Wrong section")
+        }
     }
     
     override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-//        switch section {
-//        case 0:
-//            return self.tableView(tableView, numberOfRowsInSection: section) == 0 ? nil : "From persistent store"
-//        case 1:
-//            return self.tableView(tableView, numberOfRowsInSection: section) == 0 ? nil : "Local"
-//        default:
-//            fatalError("Wrong section")
-//        }
-        return "Project List"
+        switch section {
+        case 0:
+            return "Project List"
+        default:
+            fatalError("Wrong section")
+        }
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-//        switch indexPath.section {
-//        case 0:
-//            let cell = tableView.dequeueReusableCellWithIdentifier(kProjectTableViewCellReuseIdentifier, forIndexPath: indexPath) as! ProjectTableViewCell
-//            if let taskEntity = taskFetchedResultsController.objectAtIndexPath(indexPath) {
-//                let task = Task(title: taskEntity.title, ID: taskEntity.ID, placeID: taskEntity.placeID, lat: taskEntity.lat, lng: taskEntity.lng)
-//                cell.task = task
-//            }
-//            return cell
-//
-//        case 1:
+        switch indexPath.section {
+        case 0:
             let cell = tableView.dequeueReusableCellWithIdentifier(kProjectTableViewCellReuseIdentifier, forIndexPath: indexPath) as! ProjectTableViewCell
             cell.project = projects[indexPath.row]
             return cell
-//
-//        default:
-//            fatalError("Wrong indexPath")
-//        }
+            
+        default:
+            fatalError("Wrong indexPath")
+        }
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-//        switch indexPath.section {
-//        case 0:
-//            if let taskEntity = taskFetchedResultsController.objectAtIndexPath(indexPath) {
-//                let task = Task(title: taskEntity.title, ID: taskEntity.ID, placeID: taskEntity.placeID, lat: taskEntity.lat, lng: taskEntity.lng)
-//                self.presenter.showDetailProject(project)
-//            }
-
-//        case 1:
+        switch indexPath.section {
+        case 0:
             let project = projects[indexPath.row]
             self.presenter.showDetailProject(project)
-//
-//        default:
-//            fatalError("Wrong section")
-//        }
+
+        default:
+            fatalError("Wrong section")
+        }
     }
 
     // Override to support conditional editing of the table view.
@@ -156,27 +138,22 @@ class ListTableViewController: UITableViewController {
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
             // Delete the row from the data source
-//            switch indexPath.section {
-//            case 0:
-//                if let projectEntity = projectFetchedResultsController.objectAtIndexPath(indexPath) {
-//                    let task = Project(projectId: projectEntity.projectId, name: projectEntity.projectId, tasks: <#T##Array<Task>#>)
-//                    self.presenter.removeProject(project)
-//                }
-//            case 1:
+            switch indexPath.section {
+            case 0:
                 let project = projects[indexPath.row]
-            self.presenter.removeProject(project) { (error) -> Void in
-                if (error == nil) {
-                    self.projects.removeAtIndex(indexPath.row)
-                    tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-                } else {
-                    print("delete project error")
+                self.presenter.removeProject(project) { (error) -> Void in
+                    if (error == nil) {
+                        self.projects.removeAtIndex(indexPath.row)
+                        tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+                    } else {
+                        print("delete project error")
+                    }
                 }
-            }
                 
 
-//            default:
-//                fatalError("Wrong section")
-//            }
+            default:
+                fatalError("Wrong section")
+            }
         } else if editingStyle == .Insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
         }
@@ -221,10 +198,6 @@ class ListTableViewController: UITableViewController {
         
         self.presentViewController(alert, animated: true, completion: nil)
     }
-    
-//    @IBAction func exit(sender: AnyObject) {
-//        self.presenter.exit()
-//    }
 }
 
 extension ListTableViewController: ListInterfaceProtocol {
@@ -238,48 +211,3 @@ extension ListTableViewController: AddViewControllerDelegate {
         self.tableView.reloadData()
     }
 }
-
-//extension ListTableViewController: FetchedResultsControllerDelegate {
-//    
-//    func controllerWillChangeContent<T : Object>(controller: FetchedResultsController<T>) {
-//        self.tableView.beginUpdates()
-//    }
-//    
-//    func controllerDidChangeObject<T : Object>(controller: FetchedResultsController<T>, anObject: SafeObject<T>, indexPath: NSIndexPath?, changeType: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
-//        let tableView = self.tableView
-//        
-//        switch changeType {
-//        case .Insert:
-//            tableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: UITableViewRowAnimation.Fade)
-//            
-//        case .Delete:
-//            tableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: UITableViewRowAnimation.Fade)
-//            
-//        case .Update:
-//            tableView.reloadRowsAtIndexPaths([indexPath!], withRowAnimation: UITableViewRowAnimation.Fade)
-//            
-//        case .Move:
-//            tableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: UITableViewRowAnimation.Fade)
-//            tableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: UITableViewRowAnimation.Fade)
-//        }
-//    }
-//    
-//    func controllerDidChangeSection<T : Object>(controller: FetchedResultsController<T>, section: FetchResultsSectionInfo<T>, sectionIndex: UInt, changeType: NSFetchedResultsChangeType) {
-//        let tableView = self.tableView
-//        
-//        if changeType == NSFetchedResultsChangeType.Insert {
-//            let indexSet = NSIndexSet(index: Int(sectionIndex))
-//            tableView.reloadSections(indexSet, withRowAnimation: UITableViewRowAnimation.Fade)
-//            // tableView.insertSections(indexSet, withRowAnimation: UITableViewRowAnimation.Fade)
-//        }
-//        else if changeType == NSFetchedResultsChangeType.Delete {
-//            let indexSet = NSIndexSet(index: Int(sectionIndex))
-//            tableView.reloadSections(indexSet, withRowAnimation: UITableViewRowAnimation.Fade)
-//            // tableView.deleteSections(indexSet, withRowAnimation: UITableViewRowAnimation.Fade)
-//        }
-//    }
-//
-//    func controllerDidChangeContent<T : Object>(controller: FetchedResultsController<T>) {
-//        self.tableView.endUpdates()
-//    }
-//}

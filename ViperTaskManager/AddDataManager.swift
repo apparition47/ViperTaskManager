@@ -38,28 +38,6 @@ class AddDataManager {
 
 extension AddDataManager: AddDataManagerInputProtocol {
 
-//    func fetchCitiesWithName(name: String, callback: ([Task]) -> ()) {
-//        let method = Alamofire.Method.GET
-//        let url = "https://maps.googleapis.com/maps/api/place/autocomplete/json"
-//        let parameters = ["input": "\(name)", "types": "(tasks)", "key": googleMapKey]
-//        
-//        Alamofire.Manager.sharedInstance.request(method, url, parameters: parameters, encoding: ParameterEncoding.URLEncodedInURL, headers: nil).responseJSON { (response) -> Void in
-//            switch response.result {
-//            case .Success(let JSON):
-//                let predictions = JSON["predictions"] as! [[String: AnyObject]]
-//                var tasks: [Task] = []
-//                for prediction in predictions {
-//                    let task = Task(title: prediction["description"] as! String, ID: prediction["id"] as! String, placeID: prediction["place_id"] as! String, lat: 0.0, lng: 0.0)
-//                    tasks.append(task)
-//                }
-//                callback(tasks)
-//                
-//            case .Failure(let error):
-//                print(error)
-//                callback([])
-//            }
-//        }
-//    }
     
     func fetchTasks(projectId: String, callback: (result: [Task]?, error: NSError?) -> ()) {
         let method = Alamofire.Method.GET
@@ -95,12 +73,9 @@ extension AddDataManager: AddDataManagerInputProtocol {
         let realm = try! Realm()
         realm.beginWrite()
         
-//        let taskEntity = TaskEntity()
-//        taskEntity.title = task.title
-//        taskEntity.ID = task.ID
-//        taskEntity.placeID = task.placeID
+        let taskEntity = TaskEntity(task: task)
         
-//        realm.addWithNotification(taskEntity, update: false)
+        realm.addWithNotification(taskEntity, update: false)
         
         try! realm.commitWrite()
     }

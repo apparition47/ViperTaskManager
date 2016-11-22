@@ -15,7 +15,7 @@ protocol AddInteractorInputProtocol: class {
     
     weak var presenter: AddInteractorOutputProtocol! { get set }
 
-    func fetchTasks(projectId: String, callback: (result: [Task]?, error: NSError?) -> ())
+    func fetchTasks(projectId: String, callback: (result: [Task]?) -> ())
 //    func saveProject(project: Project)
     func updateProject(project: Project, callback: (result: Project?, error: NSError?) -> ())
     func updateProjectInPersistentStore(project: Project)
@@ -26,7 +26,6 @@ protocol AddInteractorInputProtocol: class {
 
 protocol AddInteractorOutputProtocol: class {
    
-//    func foundCities(tasks: [Task])
 }
 
 class AddInteractor {
@@ -37,16 +36,16 @@ class AddInteractor {
 }
 
 extension AddInteractor: AddInteractorInputProtocol {
-    
-//    func getCitiesWithName(name: String) {
-//        self.dataManager.fetchCitiesWithName(name) { [weak self] (tasks) -> () in
-//            self?.presenter.foundCities(tasks)
-//        }
-//    }
-    
-    func fetchTasks(projectId: String, callback: (result: [Task]?, error: NSError?) -> ()) {
+
+    func fetchTasks(projectId: String, callback: (result: [Task]?) -> ()) {
         self.dataManager.fetchTasks(projectId) { (result, error) in
-            callback(result: result, error: error)
+            if (error == nil) {
+                callback(result: result)
+            } else {
+                self.dataManager.fetchProjectFromPersistentStore(projectId, callback: { (result) in
+                    callback(result: result.tasks)
+                })
+            }
         }
     }
     

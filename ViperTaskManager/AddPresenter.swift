@@ -35,9 +35,7 @@ protocol AddPresenterProtocol: class {
 protocol AddInterfaceProtocol: class {
     
     var presenter: AddPresenterProtocol!  { get set }
-    
-//    func showEmpty()
-//    func showProjects(projects: [Project])
+
 }
 
 class AddPresenter {
@@ -62,31 +60,17 @@ extension AddPresenter: AddPresenterProtocol {
         self.router.closeAddViewController(viewController: self.interface as! UIViewController)
     }
     
-//    func getCitiesWithName(name: String?) {
-//        guard let name = name else {
-//            self.interface.showEmpty()
-//            return
-//        }
-//        guard name.isEmpty != true else {
-//            self.interface.showEmpty()
-//            return
-//        }
-//        self.interactor.getCitiesWithName(name)
-//    }
-    
     func fetchTasks(projectId: String, callback: (result: [Task]?) -> ()) {
-        self.interactor.fetchTasks(projectId) { (result, error) in
+        self.interactor.fetchTasks(projectId) { (result) in
             callback(result: result)
         }
     }
     
     func selectTask(task: Task) {
-//        self.delegate?.addViewControllerDidSelectTask(task)
         self.router.presentDetailViewController(fromViewController: self.interface as! UIViewController, task: task)
     }
     
     func createTask(projectId: Int, callback: ([Task]) -> ()) {
-//        self.delegate?.addViewControllerDidSelectTask(task)
         self.router.closeAddViewController(viewController: interface as! UIViewController)
     }
     
@@ -107,7 +91,6 @@ extension AddPresenter: AddPresenterProtocol {
     }
     
     func addNewTask(projectId: String, title: String) {
-        //        self.router.presentAddViewController(fromViewController: self.interface as! UIViewController)
         self.interactor.createTask(projectId, title: title) { (result, error) -> Void in
             if (error != nil) {
                 print("error what")
@@ -125,8 +108,5 @@ extension AddPresenter: AddPresenterProtocol {
 }
 
 extension AddPresenter: AddInteractorOutputProtocol {
-    
-//    func foundProjects(projects: [Project]) {
-//        self.interface.showProjects(projects)
-//    }
+
 }

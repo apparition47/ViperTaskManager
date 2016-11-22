@@ -2,7 +2,7 @@
 //  ListContainer.swift
 //  ViperTaskManager
 //
-//  Created by Aaron Lee on 29/02/16.
+//  Created by Aaron Lee on 19/11/16.
 //  Copyright © 2016 One Fat Giraffe. All rights reserved.
 //
 
@@ -53,11 +53,6 @@ class ListContainer: AssemblyType {
             let parentAssembler = r.resolve(ListAssembler.self)!
             return AddAssembler(parentAssembler: parentAssembler)
         }
-        
-//        container.register(DetailContainerAssembler.self) { r in
-//            let parentAssembler = r.resolve(ListAssembler.self)!
-//            return DetailContainerAssembler(parentAssembler: parentAssembler)
-//        }
 
     }
 }

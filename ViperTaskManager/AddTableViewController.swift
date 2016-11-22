@@ -2,7 +2,7 @@
 //  AddTableViewController.swift
 //  ViperTaskManager
 //
-//  Created by Aaron Lee on 29/02/16.
+//  Created by Aaron Lee on 19/11/16.
 //  Copyright © 2016 One Fat Giraffe. All rights reserved.
 //
 
@@ -19,11 +19,6 @@ class AddTableViewController: UITableViewController {
 
     var project: Project!
     var tasks: [Task] = []
-    
-//    let searchController = UISearchController(searchResultsController: nil)
-
-//    var projects: [Project] = []
-    
     
     override var nibName: String? {
         get {
@@ -42,18 +37,6 @@ class AddTableViewController: UITableViewController {
         super.viewDidLoad()
 
         tableView.registerNib(UINib(nibName: "TaskTableViewCell", bundle: NSBundle.mainBundle()), forCellReuseIdentifier: kTaskTableViewCellReuseIdentifier)
-
-//        searchController.delegate = self
-//        searchController.searchResultsUpdater = self
-//        searchController.dimsBackgroundDuringPresentation = false
-//        searchController.searchBar.delegate = self
-        
-//        tableView.tableHeaderView = searchController.searchBar
-
-//        definesPresentationContext = true
-
-//        searchController.searchBar.sizeToFit()
-//        searchController.active = true
         
         self.navigationController?.toolbarHidden = false
         
@@ -66,10 +49,24 @@ class AddTableViewController: UITableViewController {
         
         self.title = project.name
         
-        self.presenter.fetchTasks(project.projectId) { (result: [Task]?) -> Void in
-            self.tasks = result!
-            self.tableView.reloadData()
+        
+        self.presenter.fetchSortBy(project.projectId) { (sortBy) in
+            self.presenter.fetchTasks(self.project.projectId) { (result: [Task]?) -> Void in
+                self.displayTasks(result!, sortBy: sortBy)
+            }
         }
+    }
+    
+    func displayTasks(result: [Task], sortBy: String) {
+        let sortedTasks: [Task]
+        if (sortBy == "title") {
+            sortedTasks = result.sort { $0.title < $1.title }
+        } else {
+            sortedTasks = result.sort { $0.deadline.compare($1.deadline) == .OrderedAscending }
+        }
+        
+        self.tasks = sortedTasks
+        self.tableView.reloadData()
     }
 
     // MARK: - Table view data source
@@ -97,24 +94,7 @@ class AddTableViewController: UITableViewController {
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let task = self.tasks[indexPath.row]
-        
-//        let alertController = UIAlertController(title: task.title, message: "Save to storage and Add to list or Add only", preferredStyle: UIAlertControllerStyle.Alert)
-        
-//        let saveAction =  UIAlertAction(title: "Save to storage", style: UIAlertActionStyle.Default) { [weak self] (action) -> Void in
-//            self?.presenter.selectAndSaveTask(task)
-//        }
-//        alertController.addAction(saveAction)
-        
-//        let addAction = UIAlertAction(title: "Add only", style: UIAlertActionStyle.Default) { [weak self] (action) -> Void in
-//            self?.presenter.selectTask(task)
-//        }
-//        alertController.addAction(addAction)
-        
-//        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil)
-//        alertController.addAction(cancelAction)
-//        
-//        self.presentViewController(alertController, animated: true, completion: nil)
-        
+
         self.presenter.selectTask(task)
     }
 
@@ -128,27 +108,21 @@ class AddTableViewController: UITableViewController {
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
             // Delete the row from the data source
-            //            switch indexPath.section {
-            //            case 0:
-            //                if let projectEntity = projectFetchedResultsController.objectAtIndexPath(indexPath) {
-            //                    let task = Project(projectId: projectEntity.projectId, name: projectEntity.projectId, tasks: <#T##Array<Task>#>)
-            //                    self.presenter.removeProject(project)
-            //                }
-            //            case 1:
-            let task = self.tasks[indexPath.row]
-            self.presenter.removeTask(task) { (error) -> Void in
-                if (error == nil) {
-                    self.tasks.removeAtIndex(indexPath.row)
-                    tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-                } else {
-                    print("delete task error")
+            switch indexPath.section {
+            case 0:
+                let task = self.tasks[indexPath.row]
+                self.presenter.removeTask(task) { (error) -> Void in
+                    if (error == nil) {
+                        self.tasks.removeAtIndex(indexPath.row)
+                        tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+                    } else {
+                        print("delete task error")
+                    }
                 }
+        
+            default:
+                fatalError("Wrong section")
             }
-            
-            
-            //            default:
-            //                fatalError("Wrong section")
-            //            }
         } else if editingStyle == .Insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
         }
@@ -168,6 +142,7 @@ class AddTableViewController: UITableViewController {
                                       style: UIAlertActionStyle.Default) { (action: UIAlertAction) in
                                         let newProject = Project(projectId: self.project.projectId, name: self.project.name, sortBy: "title", tasks: self.project.tasks)
                                         self.presenter.updateProjectInPersistentStore(newProject)
+                                        self.displayTasks(self.project.tasks, sortBy: "title")
                                         
             }
             
@@ -175,6 +150,7 @@ class AddTableViewController: UITableViewController {
                                          style: UIAlertActionStyle.Default) { (action: UIAlertAction) in
                                             let newProject = Project(projectId: self.project.projectId, name: self.project.name, sortBy: "deadline", tasks: self.project.tasks)
                                             self.presenter.updateProjectInPersistentStore(newProject)
+                                            self.displayTasks(self.project.tasks, sortBy: "deadline")
             }
             
             let cancel = UIAlertAction(title: "Cancel",
@@ -260,35 +236,4 @@ class AddTableViewController: UITableViewController {
 
 extension AddTableViewController: AddInterfaceProtocol {
     
-//    func showEmpty() {
-//        self.project.tasks.removeAll()
-//        self.tableView.reloadData()
-//    }
-//    
-//    func showTasks(tasks: [Task]) {
-//        self.project.tasks.removeAll()
-//        self.project.tasks = tasks
-//        self.tableView.reloadData()
-//    }
 }
-
-//extension AddTableViewController: UISearchControllerDelegate {
-//    
-//    func didPresentSearchController(searchController: UISearchController) {
-//        searchController.searchBar.becomeFirstResponder()
-//    }
-//}
-//
-//extension AddTableViewController: UISearchBarDelegate {
-//    
-//    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
-//        self.presenter.cancel()
-//    }
-//}
-//
-//extension AddTableViewController: UISearchResultsUpdating {
-//    
-//    func updateSearchResultsForSearchController(searchController: UISearchController) {
-//        self.presenter.getCitiesWithName(searchController.searchBar.text!)
-//    }
-//}

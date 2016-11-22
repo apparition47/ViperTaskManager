@@ -2,7 +2,7 @@
 //  ListInteractor.swift
 //  ViperTaskManager
 //
-//  Created by Aaron Lee on 29/02/16.
+//  Created by Aaron Lee on 19/11/16.
 //  Copyright © 2016 One Fat Giraffe. All rights reserved.
 //
 
@@ -32,20 +32,26 @@ class ListInteractor {
 extension ListInteractor: ListInteractorInputProtocol {
     
     func fetchProjects(callback: ([Project]) -> ()) {
-        // get from local if srv is down
         dataManager.fetchProjects() { (result, error) -> Void in
-            if ((error) != nil) {
+            if (error == nil) {
+                self.dataManager.syncProjectsToPersistentStore(result)
                 callback(result)
             } else {
-                callback(result)
+                // get from local if srv is down
+                self.dataManager.fetchProjectsFromPersistentStore() { result -> Void in
+                    callback(result)
+                }
             }
         }
     }
     
     
     func removeProject(project: Project, callback: (error: NSError?) -> ()) {
-//        dataManager.removeProjectFromPersistentStore(project)
         dataManager.removeProject(project) { (error) in
+            if (error == nil) {
+                self.dataManager.removeProjectFromPersistentStore(project)
+            }
+            
             callback(error: error)
         }
     }
