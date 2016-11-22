@@ -107,6 +107,12 @@ extension ListDataManager: ListDataManagerInputProtocol {
         let projectEntities = realm.objects(ProjectEntity).filter(predicate)
 
         realm.deleteWithNotification(projectEntities)
+        
+        // remove tasks associated with project
+        let predicate2 = NSPredicate(format: "projectId = %@", argumentArray: [project.projectId])
+        let taskEntities = realm.objects(TaskEntity).filter(predicate2)
+        
+        realm.deleteWithNotification(taskEntities)
 
         try! realm.commitWrite()
     }

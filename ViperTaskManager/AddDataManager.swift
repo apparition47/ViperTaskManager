@@ -103,7 +103,15 @@ extension AddDataManager: AddDataManagerInputProtocol {
                 let tasksJson = projectJson["tasks"] as! [[String: AnyObject]]
                 var tasks: [Task] = []
                 for taskJson in tasksJson {
-                    let task = Task(taskId: taskJson["id"] as! String, projectId: taskJson["project_id"] as! String, title: taskJson["title"] as! String, deadline: NSDate(timeIntervalSince1970: NSTimeInterval(taskJson["deadline"] as! Int)), completed: taskJson["completed"] as! Bool)
+                    
+                    let deadlineInt: Int
+                    if (taskJson["deadline"] is NSNull) {
+                        deadlineInt = 0
+                    } else {
+                        deadlineInt = taskJson["deadline"] as! Int
+                    }
+                    
+                    let task = Task(taskId: taskJson["id"] as! String, projectId: taskJson["project_id"] as! String, title: taskJson["title"] as! String, deadline: NSDate(timeIntervalSince1970: NSTimeInterval(deadlineInt)), completed: taskJson["completed"] as! Bool)
                     tasks.append(task)
                 }
                 
@@ -162,8 +170,14 @@ extension AddDataManager: AddDataManagerInputProtocol {
             case .Success(let JSON):
                 let taskJson = JSON as! [String: AnyObject]
                 
-                // taskJson["deadline"] as! Int is null???
-                let task = Task(taskId: taskJson["id"] as! String, projectId: taskJson["project_id"] as! String, title: taskJson["title"] as! String, deadline: NSDate(timeIntervalSince1970: 0), completed: taskJson["completed"] as! Bool)
+                let deadlineInt: Int
+                if (taskJson["deadline"] is NSNull) {
+                    deadlineInt = 0
+                } else {
+                    deadlineInt = taskJson["deadline"] as! Int
+                }
+                
+                let task = Task(taskId: taskJson["id"] as! String, projectId: taskJson["project_id"] as! String, title: taskJson["title"] as! String, deadline: NSDate(timeIntervalSince1970: NSTimeInterval(deadlineInt)), completed: taskJson["completed"] as! Bool)
                 
                 callback(result: task, error: nil)
                 

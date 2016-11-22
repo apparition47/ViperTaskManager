@@ -55,6 +55,10 @@ extension AddInteractor: AddInteractorInputProtocol {
     
     func updateProject(project: Project, callback: (result: Project?, error: NSError?) -> ()) {
         self.dataManager.updateProject(project) { (result, error) in
+            if (error == nil) {
+                self.dataManager.updateProjectInPersistentStore(project)
+            }
+            
             callback(result: result, error: error)
         }
     }
@@ -71,6 +75,9 @@ extension AddInteractor: AddInteractorInputProtocol {
     
     func createTask(projectId: String, title: String, callback: (result: Task?, error: NSError?) -> ()) {
         self.dataManager.createTask(projectId, title: title) { (result, error) in
+            if (error == nil) {
+                self.dataManager.saveTaskToPersistentStore(result!)
+            }
             callback(result: result, error: error)
         }
     }
