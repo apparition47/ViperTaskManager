@@ -106,7 +106,7 @@ class ListTableViewController: UITableViewController {
 //        default:
 //            fatalError("Wrong section")
 //        }
-        return "Projects"
+        return "Project List"
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -239,47 +239,47 @@ extension ListTableViewController: AddViewControllerDelegate {
     }
 }
 
-extension ListTableViewController: FetchedResultsControllerDelegate {
-    
-    func controllerWillChangeContent<T : Object>(controller: FetchedResultsController<T>) {
-        self.tableView.beginUpdates()
-    }
-    
-    func controllerDidChangeObject<T : Object>(controller: FetchedResultsController<T>, anObject: SafeObject<T>, indexPath: NSIndexPath?, changeType: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
-        let tableView = self.tableView
-        
-        switch changeType {
-        case .Insert:
-            tableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: UITableViewRowAnimation.Fade)
-            
-        case .Delete:
-            tableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: UITableViewRowAnimation.Fade)
-            
-        case .Update:
-            tableView.reloadRowsAtIndexPaths([indexPath!], withRowAnimation: UITableViewRowAnimation.Fade)
-            
-        case .Move:
-            tableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: UITableViewRowAnimation.Fade)
-            tableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: UITableViewRowAnimation.Fade)
-        }
-    }
-    
-    func controllerDidChangeSection<T : Object>(controller: FetchedResultsController<T>, section: FetchResultsSectionInfo<T>, sectionIndex: UInt, changeType: NSFetchedResultsChangeType) {
-        let tableView = self.tableView
-        
-        if changeType == NSFetchedResultsChangeType.Insert {
-            let indexSet = NSIndexSet(index: Int(sectionIndex))
-            tableView.reloadSections(indexSet, withRowAnimation: UITableViewRowAnimation.Fade)
-            // tableView.insertSections(indexSet, withRowAnimation: UITableViewRowAnimation.Fade)
-        }
-        else if changeType == NSFetchedResultsChangeType.Delete {
-            let indexSet = NSIndexSet(index: Int(sectionIndex))
-            tableView.reloadSections(indexSet, withRowAnimation: UITableViewRowAnimation.Fade)
-            // tableView.deleteSections(indexSet, withRowAnimation: UITableViewRowAnimation.Fade)
-        }
-    }
-
-    func controllerDidChangeContent<T : Object>(controller: FetchedResultsController<T>) {
-        self.tableView.endUpdates()
-    }
-}
+//extension ListTableViewController: FetchedResultsControllerDelegate {
+//    
+//    func controllerWillChangeContent<T : Object>(controller: FetchedResultsController<T>) {
+//        self.tableView.beginUpdates()
+//    }
+//    
+//    func controllerDidChangeObject<T : Object>(controller: FetchedResultsController<T>, anObject: SafeObject<T>, indexPath: NSIndexPath?, changeType: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
+//        let tableView = self.tableView
+//        
+//        switch changeType {
+//        case .Insert:
+//            tableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: UITableViewRowAnimation.Fade)
+//            
+//        case .Delete:
+//            tableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: UITableViewRowAnimation.Fade)
+//            
+//        case .Update:
+//            tableView.reloadRowsAtIndexPaths([indexPath!], withRowAnimation: UITableViewRowAnimation.Fade)
+//            
+//        case .Move:
+//            tableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: UITableViewRowAnimation.Fade)
+//            tableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: UITableViewRowAnimation.Fade)
+//        }
+//    }
+//    
+//    func controllerDidChangeSection<T : Object>(controller: FetchedResultsController<T>, section: FetchResultsSectionInfo<T>, sectionIndex: UInt, changeType: NSFetchedResultsChangeType) {
+//        let tableView = self.tableView
+//        
+//        if changeType == NSFetchedResultsChangeType.Insert {
+//            let indexSet = NSIndexSet(index: Int(sectionIndex))
+//            tableView.reloadSections(indexSet, withRowAnimation: UITableViewRowAnimation.Fade)
+//            // tableView.insertSections(indexSet, withRowAnimation: UITableViewRowAnimation.Fade)
+//        }
+//        else if changeType == NSFetchedResultsChangeType.Delete {
+//            let indexSet = NSIndexSet(index: Int(sectionIndex))
+//            tableView.reloadSections(indexSet, withRowAnimation: UITableViewRowAnimation.Fade)
+//            // tableView.deleteSections(indexSet, withRowAnimation: UITableViewRowAnimation.Fade)
+//        }
+//    }
+//
+//    func controllerDidChangeContent<T : Object>(controller: FetchedResultsController<T>) {
+//        self.tableView.endUpdates()
+//    }
+//}

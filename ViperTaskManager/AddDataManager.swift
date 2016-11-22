@@ -16,12 +16,13 @@ protocol AddDataManagerInputProtocol: class {
     
     weak var interactor: AddDataManagerOutputProtocol! { get set }
     
-//    func fetchCitiesWithName(name: String, callback: ([Task]) -> ())
+    func fetchTasks(projectId: String, callback: (result: [Task]?, error: NSError?) -> ())
     func saveTaskToPersistentStore(task: Task)
     func updateProject(project: Project, callback: (result: Project?, error: NSError?) -> ())
     func updateProjectInPersistentStore(project: Project)
     func fetchProjectFromPersistentStore(projectId: String, callback: (result: Project) -> ())
     func createTask(projectId: String, title: String, callback: (result: Task?, error: NSError?) -> ())
+    func removeTask(task: Task, callback: (error: NSError?) -> ())
 }
 
 protocol AddDataManagerOutputProtocol: class {
@@ -59,6 +60,36 @@ extension AddDataManager: AddDataManagerInputProtocol {
 //            }
 //        }
 //    }
+    
+    func fetchTasks(projectId: String, callback: (result: [Task]?, error: NSError?) -> ()) {
+        let method = Alamofire.Method.GET
+        let url = tasksServerEndpoint + "projects/" + projectId
+        
+        Alamofire.Manager.sharedInstance.request(method, url, parameters: nil, encoding: ParameterEncoding.URLEncodedInURL, headers: nil).responseJSON { (response) -> Void in
+            switch response.result {
+            case .Success(let JSON):
+                let projectJson = JSON as! [String: AnyObject]
+                let tasksJson = projectJson["tasks"] as! [[String: AnyObject]]
+                var tasks: [Task] = []
+                for taskJson in tasksJson {
+                    var deadlineInt: Int
+                    if (taskJson["deadline"] is NSNull) {
+                        deadlineInt = 0
+                    } else {
+                        deadlineInt = taskJson["deadline"] as! Int
+                    }
+                    let task = Task(taskId: taskJson["id"] as! String, projectId: taskJson["project_id"] as! String, title: taskJson["title"] as! String, deadline: NSDate(timeIntervalSince1970: NSTimeInterval(deadlineInt)), completed: taskJson["completed"] as! Bool)
+                    tasks.append(task)
+                }
+                
+                callback(result: tasks, error: nil)
+                
+            case .Failure(let error):
+                print(error)
+                callback(result: nil, error: error)
+            }
+        }
+    }
     
     func saveTaskToPersistentStore(task: Task) {
         let realm = try! Realm()
@@ -167,4 +198,21 @@ extension AddDataManager: AddDataManagerInputProtocol {
             }
         }
     }
+    
+    func removeTask(task: Task, callback: (error: NSError?) -> ()) {
+        let method = Alamofire.Method.DELETE
+        let url = tasksServerEndpoint + "projects/" + task.projectId + "/tasks/" + task.taskId
+        
+        Alamofire.Manager.sharedInstance.request(method, url, parameters: nil, encoding: ParameterEncoding.URLEncodedInURL, headers: nil).responseString { (response) -> Void in
+            switch response.result {
+            case .Success( _):
+                callback(error: nil)
+                
+            case .Failure(let error):
+                print(error)
+                callback(error: error)
+            }
+        }
+    }
+    
 }

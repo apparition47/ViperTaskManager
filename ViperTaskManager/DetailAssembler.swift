@@ -27,7 +27,7 @@ extension DetailAssembler {
 //    }
     
     func presentDetailViewController(fromViewController fromViewController: UIViewController, task: Task) {
-        let viewController = storyboard().instantiateViewControllerWithIdentifier("DetailListViewControllerID") as! DetailViewController
+        let viewController = storyboard().instantiateViewControllerWithIdentifier("DetailViewControllerID") as! DetailViewController
         viewController.task = task
         
         let navigationController = UINavigationController(rootViewController: viewController)
@@ -76,8 +76,8 @@ extension DetailAssembler {
         return SwinjectStoryboard.create(name: "List", bundle: NSBundle.mainBundle(), container: resolver)
     }
     
-    func viewController() -> DetailViewController {
-        return storyboard().instantiateViewControllerWithIdentifier("DetailListViewControllerID") as! DetailViewController
-    }
+//    func viewController() -> DetailViewController {
+//        return storyboard().instantiateViewControllerWithIdentifier("DetailListViewControllerID") as! DetailViewController
+//    }
     
 }

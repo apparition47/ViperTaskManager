@@ -36,6 +36,9 @@ class TaskTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        let selectedBackgroundView = UIView(frame: CGRect.zero)
+        selectedBackgroundView.backgroundColor = MaterialColor.lightBlueColor()
+        self.selectedBackgroundView = selectedBackgroundView
     }
 
     override func setSelected(selected: Bool, animated: Bool) {

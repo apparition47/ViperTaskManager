@@ -40,6 +40,7 @@ class AddContainer: AssemblyType {
         
         container.register(AddRouterInputProtocol.self) { (r) in
             let router = AddRouter()
+            router.detailAssembler = r.resolve(DetailAssembler.self)!
             return router
         }
         
@@ -48,10 +49,10 @@ class AddContainer: AssemblyType {
             return dataManager
         }
         
-//        container.register(DetailAssembler.self) { r in
-//            let parentAssembler = r.resolve(AddAssembler.self)!
-//            return DetailAssembler(parentAssembler: parentAssembler)
-//        }
+        container.register(DetailAssembler.self) { r in
+            let parentAssembler = r.resolve(AddAssembler.self)!
+            return DetailAssembler(parentAssembler: parentAssembler)
+        }
 
         
     }

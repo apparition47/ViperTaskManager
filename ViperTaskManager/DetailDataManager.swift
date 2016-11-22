@@ -17,8 +17,8 @@ protocol DetailDataManagerInputProtocol: class {
     weak var interactor: DetailDataManagerOutputProtocol! { get set }
     
     func getDetailTask(task: Task, callback: (Task) -> ())
-//    func getWeatherForTask(task: Task, callback: ([Weather]) -> ())
     func updateTaskInPersistentStore(task: Task)
+    func updateTask(task: Task, callback: (result: Task?, error: NSError?) -> ())
 }
 
 protocol DetailDataManagerOutputProtocol: class {
@@ -57,36 +57,12 @@ extension DetailDataManager: DetailDataManagerInputProtocol {
 //        }
     }
     
-//    func getWeatherForTask(task: Task, callback: ([Weather]) -> ()) {
-//        let method = Alamofire.Method.GET
-//        let url = "http://api.openweathermap.org/data/2.5/forecast"
-//        let parameters: [String: AnyObject] = ["lat": task.lat, "lon": task.lng, "units": "metric", "cnt": 1, "APPID": openWeatherMapKey]
-//        
-//        Alamofire.Manager.sharedInstance.request(method, url, parameters: parameters, encoding: ParameterEncoding.URLEncodedInURL, headers: nil).responseJSON { (response) -> Void in
-//            switch response.result {
-//            case .Success(let JSON):
-//                guard let list = JSON["list"] as? [[String: AnyObject]] else {
-//                    callback([])
-//                    return
-//                }
-//                var weatherList: [Weather] = []
-//                for weatherData in list {
-//                    let weather = Weather(dt: weatherData["dt"] as! Double, temp: weatherData["main"]!["temp"] as! Double, pressure: weatherData["main"]!["pressure"] as! Double, icon: weatherData["weather"]![0]["icon"] as! String)
-//                    weatherList.append(weather)
-//                }
-//                callback(weatherList)
-//                
-//            case .Failure(let error):
-//                print(error)
-//                callback([])
-//            }
-//        }
-//    }
+
     
     func updateTaskInPersistentStore(task: Task) {
-        let realm = try! Realm()
-        
-        realm.beginWrite()
+//        let realm = try! Realm()
+//        
+//        realm.beginWrite()
 //        let predicate = NSPredicate(format: "ID = %@", argumentArray: [task.taskId])
 //        let taskEntities = realm.objects(TaskEntity).filter(predicate)
 //        
@@ -97,6 +73,35 @@ extension DetailDataManager: DetailDataManagerInputProtocol {
 //        
 //        realm.addWithNotification(taskEntities, update: true)
         
-        try! realm.commitWrite()
+//        try! realm.commitWrite()
+    }
+    
+    func updateTask(task: Task, callback: (result: Task?, error: NSError?) -> ()) {
+        let method = Alamofire.Method.PATCH
+        let url = tasksServerEndpoint + "projects/" + task.projectId + "/tasks/" + task.taskId
+        let parameters: [String:AnyObject] = ["title": "\(task.title)", "deadline": task.deadline.timeIntervalSince1970, "completed": "\(task.completed)"]
+        
+        Alamofire.Manager.sharedInstance.request(method, url, parameters: parameters, encoding: ParameterEncoding.URLEncodedInURL, headers: nil).responseJSON { (response) -> Void in
+            switch response.result {
+            case .Success(let JSON):
+                let taskJson = JSON as! [String: AnyObject]
+                
+                var deadlineInt: Int
+                if (taskJson["deadline"] is NSNull) {
+                    deadlineInt = 0
+                } else {
+                    deadlineInt = taskJson["deadline"] as! Int
+                }
+                
+                let task = Task(taskId: taskJson["id"] as! String, projectId: taskJson["project_id"] as! String, title: taskJson["title"] as! String, deadline: NSDate(timeIntervalSince1970: NSTimeInterval(deadlineInt)), completed: taskJson["completed"] as! Bool)
+                print(task.completed)
+                
+                callback(result: task, error: nil)
+                
+            case .Failure(let error):
+                print(error)
+                callback(result: nil, error: error)
+            }
+        }
     }
 }

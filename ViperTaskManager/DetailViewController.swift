@@ -18,23 +18,24 @@ class DetailViewController: UIViewController {
     @IBOutlet weak var titleTextField: UITextField!
     @IBOutlet weak var deadlineDatePicker: UIDatePicker!
     @IBOutlet weak var progressButton: UIButton!
+    @IBOutlet weak var done: UIButton!
     
-    override var nibName: String? {
-        get {
-            let classString = String(self.dynamicType)
-            return classString
-        }
-    }
-    override var nibBundle: NSBundle? {
-        get {
-            return NSBundle.mainBundle()
-        }
-    }
+//    override var nibName: String? {
+//        get {
+//            let classString = String(self.dynamicType)
+//            return classString
+//        }
+//    }
+//    override var nibBundle: NSBundle? {
+//        get {
+//            return NSBundle.mainBundle()
+//        }
+//    }
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         // Do any additional setup after loading the view.
 //        activityIndicatorView.color = MaterialColor.cyanColor()
     }
@@ -43,6 +44,9 @@ class DetailViewController: UIViewController {
         super.viewWillAppear(animated)
         
         if let task = task {
+            progressButton.setTitle(task.completed ? "Finished" : "Unfinshed", forState: .Normal)
+            titleTextField.text = task.title
+            deadlineDatePicker.date = task.deadline
 //            if task.isLocationEnable() == false {
 //                self.weatherContainerView.hidden = true
 //                self.activityIndicatorView.hidden = false
@@ -58,22 +62,31 @@ class DetailViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    @IBAction func done(sender: AnyObject) {
+        let newTask = Task(taskId: task!.taskId, projectId: task!.projectId, title: titleTextField.text!, deadline: deadlineDatePicker.date, completed: progressButton.titleLabel?.text == "Finished" ? true : false)
+        self.presenter.done(newTask)
+    }
+    
+    @IBAction func toggleCompletion(sender: AnyObject) {
+        progressButton.setTitle(progressButton.titleLabel?.text == "Finished" ? "Unfinished" : "Finished", forState: .Normal)
+    }
 }
 
 extension DetailViewController: DetailInterfaceProtocol {
     
-    func showEmpty() {
-        self.task = nil
-    }
+//    func showEmpty() {
+//        self.task = nil
+//    }
+//    
+//    func showTask(task: Task) {
+//        self.task = task
     
-    func showTask(task: Task) {
-        self.task = task
-        
 //        self.weatherContainerView.hidden = true
 //        self.activityIndicatorView.hidden = false
         
 //        self.presenter.getWeatherForTask(task)
-    }
+//    }
     
 //    func showWeatherForTask(weather: [Weather], task: Task) {
 //        self.weatherContainerView.hidden = false

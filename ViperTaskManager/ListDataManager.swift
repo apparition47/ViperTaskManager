@@ -74,10 +74,18 @@ extension ListDataManager: ListDataManagerInputProtocol {
                 let projectsJson = JSON as! [[String: AnyObject]]
                 var projects: [Project] = []
                 for projectJson in projectsJson {
-                    let tasksJson = JSON["tasks"] as? [[String: AnyObject]] ?? []
+                    let tasksJson = projectJson["tasks"] as? [[String: AnyObject]] ?? []
                     var tasks: [Task] = []
                     for taskJson in tasksJson {
-                        let task = Task(taskId: taskJson["id"] as! String, projectId: taskJson["project_id"] as! String, title: taskJson["title"] as! String, deadline: NSDate(timeIntervalSince1970: NSTimeInterval(taskJson["deadline"] as! Int)), completed: taskJson["completed"] as! Bool)
+                        
+                        var deadlineInt: Int
+                        if (taskJson["deadline"] is NSNull) {
+                            deadlineInt = 0
+                        } else {
+                            deadlineInt = taskJson["deadline"] as! Int
+                        }
+                        
+                        let task = Task(taskId: taskJson["id"] as! String, projectId: taskJson["project_id"] as! String, title: taskJson["title"] as! String, deadline: NSDate(timeIntervalSince1970: NSTimeInterval(deadlineInt)), completed: taskJson["completed"] as! Bool)
                         tasks.append(task)
                     }
                     let task = Project(projectId: projectJson["id"] as! String, name: projectJson["name"] as! String, sortBy: "title", tasks: tasks)
@@ -164,7 +172,7 @@ extension ListDataManager: ListDataManagerInputProtocol {
         
         Alamofire.Manager.sharedInstance.request(method, url, parameters: nil, encoding: ParameterEncoding.URLEncodedInURL, headers: nil).responseString { (response) -> Void in
             switch response.result {
-            case .Success(let _):
+            case .Success( _):
                 callback(error: nil)
                 
             case .Failure(let error):

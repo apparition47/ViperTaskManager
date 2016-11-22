@@ -23,6 +23,7 @@ extension AddAssembler {
     func presentAddViewController(fromViewController fromViewController: UIViewController, project: Project?) {
         let viewController = storyboard().instantiateViewControllerWithIdentifier("AddTableViewControllerID") as! AddTableViewController
         viewController.project = project
+        viewController.tasks = project!.tasks
         
         viewController.presenter.delegate = fromViewController as? AddViewControllerDelegate
     

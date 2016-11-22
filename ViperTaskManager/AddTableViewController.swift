@@ -18,6 +18,7 @@ class AddTableViewController: UITableViewController {
     var presenter: AddPresenterProtocol!
 
     var project: Project!
+    var tasks: [Task] = []
     
 //    let searchController = UISearchController(searchResultsController: nil)
 
@@ -55,12 +56,20 @@ class AddTableViewController: UITableViewController {
 //        searchController.active = true
         
         self.navigationController?.toolbarHidden = false
+        
+        self.navigationItem.rightBarButtonItems = []
+        self.navigationItem.rightBarButtonItems!.append(self.editButtonItem())
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
         self.title = project.name
+        
+        self.presenter.fetchTasks(project.projectId) { (result: [Task]?) -> Void in
+            self.tasks = result!
+            self.tableView.reloadData()
+        }
     }
 
     // MARK: - Table view data source
@@ -77,17 +86,17 @@ class AddTableViewController: UITableViewController {
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return project.tasks.count
+        return self.tasks.count
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier(kTaskTableViewCellReuseIdentifier, forIndexPath: indexPath) as! TaskTableViewCell
-        cell.task = project.tasks[indexPath.row]
+        cell.task = self.tasks[indexPath.row]
         return cell
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let task = project.tasks[indexPath.row]
+        let task = self.tasks[indexPath.row]
         
 //        let alertController = UIAlertController(title: task.title, message: "Save to storage and Add to list or Add only", preferredStyle: UIAlertControllerStyle.Alert)
         
@@ -109,6 +118,42 @@ class AddTableViewController: UITableViewController {
         self.presenter.selectTask(task)
     }
 
+    // Override to support conditional editing of the table view.
+    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        // Return false if you do not want the specified item to be editable.
+        return true
+    }
+    
+    // Override to support editing the table view.
+    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        if editingStyle == .Delete {
+            // Delete the row from the data source
+            //            switch indexPath.section {
+            //            case 0:
+            //                if let projectEntity = projectFetchedResultsController.objectAtIndexPath(indexPath) {
+            //                    let task = Project(projectId: projectEntity.projectId, name: projectEntity.projectId, tasks: <#T##Array<Task>#>)
+            //                    self.presenter.removeProject(project)
+            //                }
+            //            case 1:
+            let task = self.tasks[indexPath.row]
+            self.presenter.removeTask(task) { (error) -> Void in
+                if (error == nil) {
+                    self.tasks.removeAtIndex(indexPath.row)
+                    tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+                } else {
+                    print("delete task error")
+                }
+            }
+            
+            
+            //            default:
+            //                fatalError("Wrong section")
+            //            }
+        } else if editingStyle == .Insert {
+            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
+        }
+    }
+    
     @IBAction func done(sender: AnyObject) {
         self.presenter.done()
     }
@@ -193,6 +238,7 @@ class AddTableViewController: UITableViewController {
                                 if let alertTextField = alert.textFields?.first where alertTextField.text != nil {
                                     
                                     print("And the text is... \(alertTextField.text!)!")
+                                    // presents detail view if successful
                                     self.presenter.addNewTask(self.project.projectId, title: alertTextField.text!)
                                 }
         }

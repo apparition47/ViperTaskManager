@@ -21,7 +21,7 @@ protocol AddPresenterProtocol: class {
     weak var delegate: AddViewControllerDelegate? { get set }
     
     func done()
-//    func getCitiesWithName(name: String?)
+    func fetchTasks(projectId: String, callback: (result: [Task]?) -> ())
     func selectTask(task: Task)
     func createTask(projectId: Int, callback: ([Task]) -> ())
     func updateProject(project: Project, callback: (result: Project?, error: NSError?) -> ())
@@ -29,6 +29,7 @@ protocol AddPresenterProtocol: class {
     func fetchSortBy(projectId: String, callback: (result: String) -> ())
     
     func addNewTask(projectId: String, title: String)
+    func removeTask(task: Task, callback: (error: NSError?) -> ())
 }
 
 protocol AddInterfaceProtocol: class {
@@ -73,9 +74,15 @@ extension AddPresenter: AddPresenterProtocol {
 //        self.interactor.getCitiesWithName(name)
 //    }
     
+    func fetchTasks(projectId: String, callback: (result: [Task]?) -> ()) {
+        self.interactor.fetchTasks(projectId) { (result, error) in
+            callback(result: result)
+        }
+    }
+    
     func selectTask(task: Task) {
 //        self.delegate?.addViewControllerDidSelectTask(task)
-        self.router.closeAddViewController(viewController: interface as! UIViewController)
+        self.router.presentDetailViewController(fromViewController: self.interface as! UIViewController, task: task)
     }
     
     func createTask(projectId: Int, callback: ([Task]) -> ()) {
@@ -107,6 +114,12 @@ extension AddPresenter: AddPresenterProtocol {
             } else {
                 self.router.presentDetailViewController(fromViewController: self.interface as! UIViewController, task: result!)
             }
+        }
+    }
+    
+    func removeTask(task: Task, callback: (error: NSError?) -> ()) {
+        self.interactor.removeTask(task) { (error) in
+            callback(error: error)
         }
     }
 }

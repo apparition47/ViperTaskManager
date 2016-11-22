@@ -15,12 +15,13 @@ protocol AddInteractorInputProtocol: class {
     
     weak var presenter: AddInteractorOutputProtocol! { get set }
 
-//    func getCitiesWithName(name: String)
+    func fetchTasks(projectId: String, callback: (result: [Task]?, error: NSError?) -> ())
 //    func saveProject(project: Project)
     func updateProject(project: Project, callback: (result: Project?, error: NSError?) -> ())
     func updateProjectInPersistentStore(project: Project)
     func fetchSortBy(projectId: String, callback: (result: String) -> ())
     func createTask(projectId: String, title: String, callback: (result: Task?, error: NSError?) -> ())
+    func removeTask(task: Task, callback: (error: NSError?) -> ())
 }
 
 protocol AddInteractorOutputProtocol: class {
@@ -42,6 +43,12 @@ extension AddInteractor: AddInteractorInputProtocol {
 //            self?.presenter.foundCities(tasks)
 //        }
 //    }
+    
+    func fetchTasks(projectId: String, callback: (result: [Task]?, error: NSError?) -> ()) {
+        self.dataManager.fetchTasks(projectId) { (result, error) in
+            callback(result: result, error: error)
+        }
+    }
     
     func saveTask(task: Task) {
         self.dataManager.saveTaskToPersistentStore(task)
@@ -66,6 +73,12 @@ extension AddInteractor: AddInteractorInputProtocol {
     func createTask(projectId: String, title: String, callback: (result: Task?, error: NSError?) -> ()) {
         self.dataManager.createTask(projectId, title: title) { (result, error) in
             callback(result: result, error: error)
+        }
+    }
+    
+    func removeTask(task: Task, callback: (error: NSError?) -> ()) {
+        self.dataManager.removeTask(task) { (error) in
+            callback(error: error)
         }
     }
 }

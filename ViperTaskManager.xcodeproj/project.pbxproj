@@ -26,7 +26,6 @@
 		1CC3649E1C875B99007344F2 /* DetailPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC364971C875B99007344F2 /* DetailPresenter.swift */; };
 		1CC3649F1C875B99007344F2 /* DetailRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC364981C875B99007344F2 /* DetailRouter.swift */; };
 		1CC364A31C875BE9007344F2 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC364A11C875BE9007344F2 /* DetailViewController.swift */; };
-		1CC364A41C875BE9007344F2 /* DetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1CC364A21C875BE9007344F2 /* DetailViewController.xib */; };
 		1CC644F11C84D5CD00BD9265 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC644F01C84D5CD00BD9265 /* AppDelegate.swift */; };
 		1CC644F81C84D5CD00BD9265 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1CC644F61C84D5CD00BD9265 /* Main.storyboard */; };
 		1CC644FA1C84D5CD00BD9265 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1CC644F91C84D5CD00BD9265 /* Assets.xcassets */; };
@@ -80,7 +79,6 @@
 		1CC364971C875B99007344F2 /* DetailPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DetailPresenter.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		1CC364981C875B99007344F2 /* DetailRouter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailRouter.swift; sourceTree = "<group>"; };
 		1CC364A11C875BE9007344F2 /* DetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DetailViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
-		1CC364A21C875BE9007344F2 /* DetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DetailViewController.xib; sourceTree = "<group>"; };
 		1CC644ED1C84D5CD00BD9265 /* ViperTaskManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ViperTaskManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1CC644F01C84D5CD00BD9265 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1CC644F71C84D5CD00BD9265 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -293,7 +291,6 @@
 			isa = PBXGroup;
 			children = (
 				1CC364A11C875BE9007344F2 /* DetailViewController.swift */,
-				1CC364A21C875BE9007344F2 /* DetailViewController.xib */,
 				1CC364971C875B99007344F2 /* DetailPresenter.swift */,
 				1CC364981C875B99007344F2 /* DetailRouter.swift */,
 				1CC364961C875B99007344F2 /* DetailInteractor.swift */,
@@ -391,7 +388,6 @@
 				1CC644FA1C84D5CD00BD9265 /* Assets.xcassets in Resources */,
 				1CC6452C1C84DD3F00BD9265 /* AddTableViewController.xib in Resources */,
 				1CC645131C84DAA400BD9265 /* List.storyboard in Resources */,
-				1CC364A41C875BE9007344F2 /* DetailViewController.xib in Resources */,
 				1CF02AED1C8896B2008CEAEE /* TaskTableViewCell.xib in Resources */,
 				1C0D01991C863BD000218409 /* ProjectTableViewCell.xib in Resources */,
 				1CC644F81C84D5CD00BD9265 /* Main.storyboard in Resources */,

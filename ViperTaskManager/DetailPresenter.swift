@@ -14,14 +14,15 @@ protocol DetailPresenterProtocol: class {
     
     func getDetailTask(task: Task)
 //    func getWeatherForTask(task: Task)
+    func done(task: Task)
 }
 
 protocol DetailInterfaceProtocol: class {
     
     var presenter: DetailPresenterProtocol!  { get set }
     
-    func showEmpty()
-    func showTask(task: Task)
+//    func showEmpty()
+//    func showTask(task: Task)
 //    func showWeatherForTask(weather: [Weather], task: Task)
 }
 
@@ -49,6 +50,18 @@ extension DetailPresenter: DetailPresenterProtocol {
 //    func getWeatherForTask(task: Task) {
 //        self.interactor.getWeatherForTask(task)
 //    }
+    
+    func done(task: Task) {
+        self.interactor.updateTask(task) { (result, error) -> Void in
+            if (error != nil) {
+                print("error updating task")
+                // TODO persist
+            }
+            
+            self.router.dismissDetailViewController(viewController: self.interface as! UIViewController)
+        }
+        
+    }
 }
 
 extension DetailPresenter: DetailInteractorOutputProtocol {

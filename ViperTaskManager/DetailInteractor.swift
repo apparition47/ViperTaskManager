@@ -14,7 +14,7 @@ protocol DetailInteractorInputProtocol: class {
     weak var presenter: DetailInteractorOutputProtocol! { get set }
     
     func getDetailTask(task: Task)
-//    func getWeatherForTask(city: Task)
+    func updateTask(task: Task, callback: (result: Task?, error: NSError?) -> ())
 }
 
 protocol DetailInteractorOutputProtocol: class {
@@ -40,11 +40,11 @@ extension DetailInteractor: DetailInteractorInputProtocol {
         }
     }
     
-//    func getWeatherForTask(city: Task) {
-//        self.dataManager.getWeatherForTask(city) { [weak self] (weather) -> () in
-//            self?.presenter.foundWeatherForTask(weather, city: city)
-//        }
-//    }
+    func updateTask(task: Task, callback: (result: Task?, error: NSError?) -> ()) {
+        self.dataManager.updateTask(task) { (result, error) in
+            callback(result: task, error: error)
+        }
+    }
     
 }
 
