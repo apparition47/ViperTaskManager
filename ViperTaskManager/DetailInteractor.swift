@@ -10,10 +10,9 @@ import Foundation
 
 
 protocol DetailInteractorInputProtocol: class {
-    
-    weak var presenter: DetailInteractorOutputProtocol! { get set }
-    
-    func updateTask(task: Task, callback: (result: Task?, error: NSError?) -> ())
+    var presenter: DetailInteractorOutputProtocol! { get set }
+
+    func updateTask(task: Task, callback: @escaping (_ result: Task?, _ error: Error?) -> ())
 }
 
 protocol DetailInteractorOutputProtocol: class {
@@ -21,22 +20,18 @@ protocol DetailInteractorOutputProtocol: class {
 }
 
 class DetailInteractor {
-    
     weak var presenter: DetailInteractorOutputProtocol!
     
     var dataManager: DetailDataManagerInputProtocol!
-
 }
 
 extension DetailInteractor: DetailInteractorInputProtocol {
-
-
-    func updateTask(task: Task, callback: (result: Task?, error: NSError?) -> ()) {
-        self.dataManager.updateTask(task) { (result, error) in
+    func updateTask(task: Task, callback: @escaping (_ result: Task?, _ error: Error?) -> ()) {
+        self.dataManager.updateTask(task: task) { (result, error) in
             if (error == nil) {
-                self.dataManager.updateTaskInPersistentStore(task)
+                self.dataManager.updateTaskInPersistentStore(task: task)
             }
-            callback(result: task, error: error)
+            callback(task, error)
         }
     }
     

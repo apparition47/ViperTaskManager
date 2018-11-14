@@ -1,37 +1,85 @@
 PODS:
-  - Alamofire (3.5.1)
-  - RBQFetchedResultsController (3.0.1):
+  - Alamofire (4.7.3)
+  - RBQFetchedResultsController (5.0.3):
+    - RBQSafeRealmObject
+    - Realm (>= 1.0.0)
+    - RealmUtilities
+  - RBQSafeRealmObject (1.1):
+    - Realm (>= 0.99.1)
+    - RealmUtilities (>= 0.2.1)
+  - Realm (3.11.1):
+    - Realm/Headers (= 3.11.1)
+  - Realm/Headers (3.11.1)
+  - RealmSwift (3.11.1):
+    - Realm (= 3.11.1)
+  - RealmUtilities (0.4):
     - Realm (>= 0.95)
-  - Realm (0.98.5):
-    - Realm/Headers (= 0.98.5)
-  - Realm/Headers (0.98.5)
-  - RealmSwift (0.98.5):
-    - Realm (= 0.98.5)
-  - SnapKit (0.22.0)
-  - SwiftFetchedResultsController (3.0.1):
-    - RBQFetchedResultsController (>= 3.0.1)
-    - RealmSwift (>= 0.96)
-  - SwiftyJSON (2.3.2)
-  - Swinject (1.1.5)
+  - SafeRealmObject (1.1):
+    - RBQSafeRealmObject
+    - RealmSwift (>= 0.99.1)
+    - RealmUtilities (>= 0.2.1)
+  - SnapKit (4.0.1)
+  - SwiftFetchedResultsController (5.0.3):
+    - RBQFetchedResultsController (>= 5.0.3)
+    - RealmSwift (>= 2.1.1)
+    - SafeRealmObject
+  - SwiftyJSON (4.2.0)
+  - Swinject (2.5.0)
+  - SwinjectStoryboard (2.1.0):
+    - Swinject (~> 2.5)
 
 DEPENDENCIES:
-  - Alamofire (~> 3.5.0)
-  - RealmSwift (~> 0.98.5)
-  - SnapKit (~> 0.22.0)
-  - SwiftFetchedResultsController (~> 3.0.1)
-  - SwiftyJSON (~> 2.3.2)
-  - Swinject (~> 1.1.5)
+  - Alamofire (~> 4.7.1)
+  - RBQFetchedResultsController (from `https://github.com/DeveloperLY/RBQFetchedResultsController.git`)
+  - Realm (~> 3.11.1)
+  - RealmSwift (~> 3.11.1)
+  - SnapKit (~> 4.0.0)
+  - SwiftFetchedResultsController (from `https://github.com/DeveloperLY/RBQFetchedResultsController.git`)
+  - SwiftyJSON (~> 4.2.0)
+  - Swinject
+  - SwinjectStoryboard
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - Alamofire
+    - RBQSafeRealmObject
+    - Realm
+    - RealmSwift
+    - RealmUtilities
+    - SafeRealmObject
+    - SnapKit
+    - SwiftyJSON
+    - Swinject
+    - SwinjectStoryboard
+
+EXTERNAL SOURCES:
+  RBQFetchedResultsController:
+    :git: https://github.com/DeveloperLY/RBQFetchedResultsController.git
+  SwiftFetchedResultsController:
+    :git: https://github.com/DeveloperLY/RBQFetchedResultsController.git
+
+CHECKOUT OPTIONS:
+  RBQFetchedResultsController:
+    :commit: 0e257af89517b32bf7f7050de19e577d8559e993
+    :git: https://github.com/DeveloperLY/RBQFetchedResultsController.git
+  SwiftFetchedResultsController:
+    :commit: 0e257af89517b32bf7f7050de19e577d8559e993
+    :git: https://github.com/DeveloperLY/RBQFetchedResultsController.git
 
 SPEC CHECKSUMS:
-  Alamofire: 0dfba1184a543e2aa160f4e39cac4e8aba48d223
-  RBQFetchedResultsController: 4b8a80647859241abdb3da04b486a6ad02dd5093
-  Realm: db08379969e45cea2edd1c3c0a090fe9e22d2d2f
-  RealmSwift: cb11ad1c35e15dc982f2dbf5afe2a3124193a358
-  SnapKit: 0dd2fd157330f1ea11fd84da13e6be8a7a22bae0
-  SwiftFetchedResultsController: 646da58a5cde2293b692f5c8283d1db001d720bc
-  SwiftyJSON: 04ccea08915aa0109039157c7974cf0298da292a
-  Swinject: 49b2b23850829e0a6074681264dcb1aa64c0dbca
+  Alamofire: c7287b6e5d7da964a70935e5db17046b7fde6568
+  RBQFetchedResultsController: c1f30ddb0e59a115cef7719edfea769061a2f906
+  RBQSafeRealmObject: 128e6ece2acceeb7dea9d00b8fa40ba4c489c3fa
+  Realm: 037c5919b9ceb59d6beed5d3b031096856b119b3
+  RealmSwift: c9580133e73ef40ed340401af2dbc9a5790dfea7
+  RealmUtilities: bd4d18141e62a6cdcfa1859f1f090a27ab282628
+  SafeRealmObject: b881780ebc49621ab4a12bb14cd283955fe540ad
+  SnapKit: 0de968a9fec17499afa29683b05d0c775b6d1c29
+  SwiftFetchedResultsController: 0882e53eff2e9d9e0de57194248cda35607b4973
+  SwiftyJSON: c4bcba26dd9ec7a027fc8eade48e2c911f229e96
+  Swinject: 82cdb851f63f91bba974e3eca1d69780f2f7677e
+  SwinjectStoryboard: 688f096033103e66ffcf6ca678211acd7d7be505
 
-PODFILE CHECKSUM: 090d4fddad85b1a00a24101bde8fbe108b1914e6
+PODFILE CHECKSUM: d2f8bb2307408de2e11e4a747dcc782e7e290573
 
-COCOAPODS: 1.1.1
+COCOAPODS: 1.5.3

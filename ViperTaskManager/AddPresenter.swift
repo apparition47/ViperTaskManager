@@ -12,24 +12,22 @@ import UIKit
 
 
 protocol AddViewControllerDelegate: class {
-    
     func addViewControllerDidSelectProject(project: Project)
 }
 
 protocol AddPresenterProtocol: class {
-
-    weak var delegate: AddViewControllerDelegate? { get set }
+    var delegate: AddViewControllerDelegate? { get set }
     
     func done()
-    func fetchTasks(projectId: String, callback: (result: [Task]?) -> ())
+    func fetchTasks(projectId: String, callback: @escaping (_ result: [Task]?) -> ())
     func selectTask(task: Task)
     func createTask(projectId: Int, callback: ([Task]) -> ())
-    func updateProject(project: Project, callback: (result: Project?, error: NSError?) -> ())
+    func updateProject(project: Project, callback: @escaping (_ result: Project?, _ error: Error?) -> ())
     func updateProjectInPersistentStore(project: Project)
-    func fetchSortBy(projectId: String, callback: (result: String) -> ())
+    func fetchSortBy(projectId: String, callback: (_ result: String) -> ())
     
     func addNewTask(projectId: String, title: String)
-    func removeTask(task: Task, callback: (error: NSError?) -> ())
+    func removeTask(task: Task, callback: @escaping (_ error: Error?) -> ())
 }
 
 protocol AddInterfaceProtocol: class {
@@ -55,14 +53,13 @@ class AddPresenter {
 }
 
 extension AddPresenter: AddPresenterProtocol {
-    
     func done() {
         self.router.closeAddViewController(viewController: self.interface as! UIViewController)
     }
     
-    func fetchTasks(projectId: String, callback: (result: [Task]?) -> ()) {
-        self.interactor.fetchTasks(projectId) { (result) in
-            callback(result: result)
+    func fetchTasks(projectId: String, callback: @escaping (_ result: [Task]?) -> ()) {
+        self.interactor.fetchTasks(projectId: projectId) { (result) in
+            callback(result)
         }
     }
     
@@ -74,24 +71,24 @@ extension AddPresenter: AddPresenterProtocol {
         self.router.closeAddViewController(viewController: interface as! UIViewController)
     }
     
-    func updateProject(project: Project, callback: (result: Project?, error: NSError?) -> ()) {
-        self.interactor.updateProject(project) { (result, error) in
-            callback(result: result, error: error)
+    func updateProject(project: Project, callback: @escaping (_ result: Project?, _ error: Error?) -> ()) {
+        self.interactor.updateProject(project: project) { (result, error) in
+            callback(result, error)
         }
     }
     
     func updateProjectInPersistentStore(project: Project) {
-        self.interactor.updateProjectInPersistentStore(project)
+        self.interactor.updateProjectInPersistentStore(project: project)
     }
     
-    func fetchSortBy(projectId: String, callback: (result: String) -> ()) {
-        self.interactor.fetchSortBy(projectId) { (result) in
-            callback(result: result)
+    func fetchSortBy(projectId: String, callback: (_ result: String) -> ()) {
+        self.interactor.fetchSortBy(projectId: projectId) { (result) in
+            callback(result)
         }
     }
     
     func addNewTask(projectId: String, title: String) {
-        self.interactor.createTask(projectId, title: title) { (result, error) -> Void in
+        self.interactor.createTask(projectId: projectId, title: title) { (result, error) -> Void in
             if (error != nil) {
                 print("error what")
             } else {
@@ -100,9 +97,9 @@ extension AddPresenter: AddPresenterProtocol {
         }
     }
     
-    func removeTask(task: Task, callback: (error: NSError?) -> ()) {
-        self.interactor.removeTask(task) { (error) in
-            callback(error: error)
+    func removeTask(task: Task, callback: @escaping (_ error: Error?) -> ()) {
+        self.interactor.removeTask(task: task) { (error) in
+            callback(error)
         }
     }
 }

@@ -2,7 +2,7 @@
 
 The app will help users manage tasks. They will be able to make projects on the app and then add tasks to them. The app will fetch data from a [server](https://github.com/Lang-8/TasksServer) and display it in-app.
 
-Written in Swift using VIPER. Tested on Xcode 8, iOS 10.1.
+Written in Swift using VIPER. Tested on Xcode 10.1.
 
 ## Features
 

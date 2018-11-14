@@ -8,14 +8,12 @@
 
 import Foundation
 
-
 protocol ListInteractorInputProtocol: class {
+    var presenter: ListInteractorOutputProtocol! { get set }
     
-    weak var presenter: ListInteractorOutputProtocol! { get set }
-    
-    func fetchProjects(callback: ([Project]) -> ())
-    func removeProject(project: Project, callback: (error: NSError?) -> ())
-    func createProject(name: String, callback: (result: Project?, error: NSError?) -> ())
+    func fetchProjects(callback: @escaping ([Project]) -> ())
+    func removeProject(project: Project, callback: @escaping (_ error: Error?) -> ())
+    func createProject(name: String, callback: @escaping (_ result: Project?, _ error: Error?) -> ())
 }
 
 protocol ListInteractorOutputProtocol: class {
@@ -23,18 +21,16 @@ protocol ListInteractorOutputProtocol: class {
 }
 
 class ListInteractor {
-    
     weak var presenter: ListInteractorOutputProtocol!
     
     var dataManager: ListDataManagerInputProtocol!
 }
 
 extension ListInteractor: ListInteractorInputProtocol {
-    
-    func fetchProjects(callback: ([Project]) -> ()) {
+    func fetchProjects(callback: @escaping ([Project]) -> ()) {
         dataManager.fetchProjects() { (result, error) -> Void in
             if (error == nil) {
-                self.dataManager.syncProjectsToPersistentStore(result)
+                self.dataManager.syncProjectsToPersistentStore(projects: result)
                 callback(result)
             } else {
                 // get from local if srv is down
@@ -46,21 +42,21 @@ extension ListInteractor: ListInteractorInputProtocol {
     }
     
     
-    func removeProject(project: Project, callback: (error: NSError?) -> ()) {
-        dataManager.removeProject(project) { (error) in
+    func removeProject(project: Project, callback: @escaping (_ error: Error?) -> ()) {
+        dataManager.removeProject(project: project) { (error) in
             if (error == nil) {
-                self.dataManager.removeProjectFromPersistentStore(project)
+                self.dataManager.removeProjectFromPersistentStore(project: project)
             }
             
-            callback(error: error)
+            callback(error)
         }
     }
     
-    func createProject(name: String, callback: (result: Project?, error: NSError?) -> ()) {
-        dataManager.createProject(name) { (result, error) -> Void in
-            callback(result: result, error: error)
+    func createProject(name: String, callback: @escaping (_ result: Project?, _ error: Error?) -> ()) {
+        dataManager.createProject(name: name) { (result, error) -> Void in
+            callback(result, error)
             if (error == nil) {
-                self.dataManager.saveProjectInPersistentStore(result!)
+                self.dataManager.saveProjectInPersistentStore(project: result!)
             }
         }
     }

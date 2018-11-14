@@ -12,9 +12,7 @@ import SwiftFetchedResultsController
 
 
 class ListTableViewController: UITableViewController {
-    
     let kProjectTableViewCellReuseIdentifier = "ProjectTableViewCellReuseIdentifier"
-
     
     // MARK: - VIPER Properties
     var presenter: ListPresenterProtocol!
@@ -25,30 +23,29 @@ class ListTableViewController: UITableViewController {
     
     override var nibName: String? {
         get {
-            let classString = String(self.dynamicType)
+            let classString = String(describing: type(of: self))
             return classString
         }
     }
-    override var nibBundle: NSBundle? {
+    override var nibBundle: Bundle? {
         get {
-            return NSBundle.mainBundle()
+            return Bundle.main
         }
     }
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        tableView.registerNib(UINib(nibName: "ProjectTableViewCell", bundle: NSBundle.mainBundle()), forCellReuseIdentifier: kProjectTableViewCellReuseIdentifier)
-        tableView.estimatedRowHeight = UITableViewAutomaticDimension
-        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.register(UINib(nibName: "ProjectTableViewCell", bundle: Bundle.main), forCellReuseIdentifier: kProjectTableViewCellReuseIdentifier)
+        tableView.estimatedRowHeight = UITableView.automaticDimension
+        tableView.rowHeight = UITableView.automaticDimension
         
 //        self.navigationItem.rightBarButtonItems!.append(self.editButtonItem())
         self.navigationItem.rightBarButtonItems = []
-        self.navigationItem.rightBarButtonItems!.append(self.editButtonItem())
+        self.navigationItem.rightBarButtonItems!.append(self.editButtonItem)
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         self.presenter.fetchProjects() { (result: [Project]) -> Void in
@@ -74,29 +71,28 @@ class ListTableViewController: UITableViewController {
 
     // MARK: - Table view data source
 
-    override func tableView(tableView: UITableView, estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return UITableViewAutomaticDimension
+    override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
     }
     
-    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return UITableViewAutomaticDimension
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
     }
     
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case 0:
             return projects.count
-        
         default:
             fatalError("Wrong section")
         }
     }
     
-    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch section {
         case 0:
             return "Project List"
@@ -105,46 +101,44 @@ class ListTableViewController: UITableViewController {
         }
     }
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
         case 0:
-            let cell = tableView.dequeueReusableCellWithIdentifier(kProjectTableViewCellReuseIdentifier, forIndexPath: indexPath) as! ProjectTableViewCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: kProjectTableViewCellReuseIdentifier, for: indexPath) as! ProjectTableViewCell
             cell.project = projects[indexPath.row]
             return cell
-            
         default:
             fatalError("Wrong indexPath")
         }
     }
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
         case 0:
             let project = projects[indexPath.row]
-            self.presenter.showDetailProject(project)
-
+            self.presenter.showDetailProject(project: project)
         default:
             fatalError("Wrong section")
         }
     }
 
     // Override to support conditional editing of the table view.
-    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         // Return false if you do not want the specified item to be editable.
         return true
     }
 
     // Override to support editing the table view.
-    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if editingStyle == .Delete {
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
             // Delete the row from the data source
             switch indexPath.section {
             case 0:
                 let project = projects[indexPath.row]
-                self.presenter.removeProject(project) { (error) -> Void in
+                self.presenter.removeProject(project: project) { (error) -> Void in
                     if (error == nil) {
-                        self.projects.removeAtIndex(indexPath.row)
-                        tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+                        self.projects.remove(at: indexPath.row)
+                        tableView.deleteRows(at: [indexPath], with: .fade)
                     } else {
                         print("delete project error")
                     }
@@ -154,18 +148,18 @@ class ListTableViewController: UITableViewController {
             default:
                 fatalError("Wrong section")
             }
-        } else if editingStyle == .Insert {
+        } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
         }
     }
 
     // Override to support rearranging the table view.
-    override func tableView(tableView: UITableView, moveRowAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
-
+    override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        
     }
 
     // Override to support conditional rearranging of the table view.
-    override func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
         // Return false if you do not want the item to be re-orderable.
         return false
     }
@@ -173,30 +167,30 @@ class ListTableViewController: UITableViewController {
     @IBAction func add(sender: AnyObject) {
         let alert = UIAlertController(title: "New Project",
                                       message: "Type in a name",
-                                      preferredStyle: UIAlertControllerStyle.Alert)
+                                      preferredStyle: UIAlertController.Style.alert)
         
         let ok = UIAlertAction(title: "OK",
-                               style: UIAlertActionStyle.Default) { (action: UIAlertAction) in
+                               style: UIAlertAction.Style.default) { (action: UIAlertAction) in
                                 
-            if let alertTextField = alert.textFields?.first where alertTextField.text != nil {
+                                if let alertTextField = alert.textFields?.first, alertTextField.text != nil {
                 
                 print("And the text is... \(alertTextField.text!)!")
-                self.presenter.addNewProject(alertTextField.text!)
+                                    self.presenter.addNewProject(name: alertTextField.text!)
             }
         }
         
         let cancel = UIAlertAction(title: "Cancel",
-                                   style: UIAlertActionStyle.Cancel,
+                                   style: UIAlertAction.Style.cancel,
                                    handler: nil)
         
-        alert.addTextFieldWithConfigurationHandler { (textField: UITextField) in
+        alert.addTextField { (textField: UITextField) in
             textField.placeholder = ""
         }
         
         alert.addAction(ok)
         alert.addAction(cancel)
         
-        self.presentViewController(alert, animated: true, completion: nil)
+        self.present(alert, animated: true, completion: nil)
     }
 }
 

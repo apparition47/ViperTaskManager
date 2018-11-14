@@ -12,38 +12,33 @@ import Alamofire
 
 
 protocol ListDataManagerInputProtocol: class {
-    
-    weak var interactor: ListDataManagerOutputProtocol! { get set }
+    var interactor: ListDataManagerOutputProtocol! { get set }
     
     func fetchProjectsFromPersistentStore(callback: ([Project]) -> ())
-    func fetchProjects(callback: (result: [Project], error: NSError?) -> ())
+    func fetchProjects(callback: @escaping (_ result: [Project], _ error: Error?) -> ())
     func saveProjectInPersistentStore(project: Project)
     func removeProjectFromPersistentStore(project: Project)
-    func createProject(name: String, callback: (result: Project?, error: NSError?) -> ())
-    func removeProject(project: Project, callback: (error: NSError?) -> ())
+    func createProject(name: String, callback: @escaping (_ result: Project?, _ error: Error?) -> ())
+    func removeProject(project: Project, callback: @escaping (_ error: Error?) -> ())
     func syncProjectsToPersistentStore(projects: [Project])
 }
 
 protocol ListDataManagerOutputProtocol: class {
-    
     var dataManager: ListDataManagerInputProtocol! { get set }
 }
 
-
 class ListDataManager {
-    
     weak var interactor: ListDataManagerOutputProtocol!
 }
 
 extension ListDataManager: ListDataManagerInputProtocol {
-    
-    func fetchProjects(callback: (result: [Project], error: NSError?) -> ()) {
-        let method = Alamofire.Method.GET
+    func fetchProjects(callback: @escaping (_ result: [Project], _ error: Error?) -> ()) {
+        let method = HTTPMethod.get
         let url = tasksServerEndpoint + "projects"
         
-        Alamofire.Manager.sharedInstance.request(method, url, parameters: nil, encoding: ParameterEncoding.URLEncodedInURL, headers: nil).responseJSON { (response) -> Void in
+        Alamofire.SessionManager.default.request(url, method: method, parameters: nil).responseJSON { (response) -> Void in
             switch response.result {
-            case .Success(let JSON):
+            case .success(let JSON):
                 let projectsJson = JSON as! [[String: AnyObject]]
                 var projects: [Project] = []
                 for projectJson in projectsJson {
@@ -58,17 +53,16 @@ extension ListDataManager: ListDataManagerInputProtocol {
                             deadlineInt = taskJson["deadline"] as! Int
                         }
                         
-                        let task = Task(taskId: taskJson["id"] as! String, projectId: taskJson["project_id"] as! String, title: taskJson["title"] as! String, deadline: NSDate(timeIntervalSince1970: NSTimeInterval(deadlineInt)), completed: taskJson["completed"] as! Bool)
+                        let task = Task(taskId: taskJson["id"] as! String, projectId: taskJson["project_id"] as! String, title: taskJson["title"] as! String, deadline: Date(timeIntervalSince1970: TimeInterval(deadlineInt)), completed: taskJson["completed"] as! Bool)
                         tasks.append(task)
                     }
                     let task = Project(projectId: projectJson["id"] as! String, name: projectJson["name"] as! String, sortBy: "title", tasks: tasks)
                     projects.append(task)
                 }
-                callback(result: projects, error: nil)
-                
-            case .Failure(let error):
+                callback(projects, nil)
+            case .failure(let error):
                 print(error)
-                callback(result: [], error: error)
+                callback([], error)
             }
         }
     }
@@ -76,12 +70,12 @@ extension ListDataManager: ListDataManagerInputProtocol {
     func fetchProjectsFromPersistentStore(callback: ([Project]) -> ()) {
         let realm = try! Realm()
 
-        let projectEntities = realm.objects(ProjectEntity)
+        let projectEntities = realm.objects(ProjectEntity.self)
 
         var projects: [Project] = []
         for projectEntity in projectEntities {
-            let tasks = projectEntity.tasks.map{ Task(taskId: $0.taskId, projectId: $0.projectId, title: $0.title, deadline: $0.deadline, completed: $0.completed ) }
-            let project = Project(projectId: projectEntity.projectId, name: projectEntity.name, sortBy: projectEntity.sortBy, tasks: tasks)
+            let tasks = projectEntity.tasks.map { Task(taskId: $0.taskId, projectId: $0.projectId, title: $0.title, deadline: $0.deadline, completed: $0.completed ) }
+            let project = Project(projectId: projectEntity.projectId, name: projectEntity.name, sortBy: projectEntity.sortBy, tasks: Array(tasks))
             projects.append(project)
         }
         callback(projects)
@@ -93,7 +87,7 @@ extension ListDataManager: ListDataManagerInputProtocol {
         
         let projectEntity = ProjectEntity(project: project)
         
-        realm.addWithNotification(projectEntity, update: false)
+        realm.add(projectEntity, update: false)
         
         try! realm.commitWrite()
     }
@@ -104,58 +98,56 @@ extension ListDataManager: ListDataManagerInputProtocol {
         realm.beginWrite()
 
         let predicate = NSPredicate(format: "projectId = %@", argumentArray: [project.projectId])
-        let projectEntities = realm.objects(ProjectEntity).filter(predicate)
+        let projectEntities = realm.objects(ProjectEntity.self).filter(predicate)
 
-        realm.deleteWithNotification(projectEntities)
+        realm.delete(projectEntities)
         
         // remove tasks associated with project
         let predicate2 = NSPredicate(format: "projectId = %@", argumentArray: [project.projectId])
-        let taskEntities = realm.objects(TaskEntity).filter(predicate2)
+        let taskEntities = realm.objects(TaskEntity.self).filter(predicate2)
         
-        realm.deleteWithNotification(taskEntities)
+        realm.delete(taskEntities)
 
         try! realm.commitWrite()
     }
 
-    func createProject(name: String, callback: (result: Project?, error: NSError?) -> ()) {
-        let method = Alamofire.Method.POST
+    func createProject(name: String, callback: @escaping (_ result: Project?, _ error: Error?) -> ()) {
+        let method = HTTPMethod.post
         let url = tasksServerEndpoint + "projects"
-        let parameters: [String:AnyObject] = ["name": "\(name)"]
+        let parameters: [String: String] = ["name": "\(name)"]
         
-        Alamofire.Manager.sharedInstance.request(method, url, parameters: parameters, encoding: ParameterEncoding.URLEncodedInURL, headers: nil).responseJSON { (response) -> Void in
+        Alamofire.SessionManager.default.request(url, method: method, parameters: parameters).responseJSON { (response) -> Void in
             switch response.result {
-            case .Success(let JSON):
+            case .success(let JSON):
                 let projectJson = JSON as! [String: AnyObject]
                 let tasksJson = projectJson["tasks"] as! [[String: AnyObject]]
                 var tasks: [Task] = []
                 for taskJson in tasksJson {
-                    let task = Task(taskId: taskJson["id"] as! String, projectId: taskJson["project_id"] as! String, title: taskJson["title"] as! String, deadline: NSDate(timeIntervalSince1970: NSTimeInterval(taskJson["deadline"] as! Int)), completed: taskJson["completed"] as! Bool)
+                    let task = Task(taskId: taskJson["id"] as! String, projectId: taskJson["project_id"] as! String, title: taskJson["title"] as! String, deadline: Date(timeIntervalSince1970: TimeInterval(taskJson["deadline"] as! Int)), completed: taskJson["completed"] as! Bool)
                     tasks.append(task)
                 }
                 
                 let project = Project(projectId: projectJson["id"] as! String, name: projectJson["name"] as! String, sortBy: "title", tasks: tasks)
                 
-                callback(result: project, error: nil)
-                
-            case .Failure(let error):
+                callback(project, nil)
+            case .failure(let error):
                 print(error)
-                callback(result: nil, error: error)
+                callback(nil, error)
             }
         }
     }
     
-    func removeProject(project: Project, callback: (error: NSError?) -> ()) {
-        let method = Alamofire.Method.DELETE
+    func removeProject(project: Project, callback: @escaping (_ error: Error?) -> ()) {
+        let method = HTTPMethod.delete
         let url = tasksServerEndpoint + "projects/" + project.projectId
         
-        Alamofire.Manager.sharedInstance.request(method, url, parameters: nil, encoding: ParameterEncoding.URLEncodedInURL, headers: nil).responseString { (response) -> Void in
+        Alamofire.SessionManager.default.request(url, method: method, parameters: nil).responseString { (response) -> Void in
             switch response.result {
-            case .Success( _):
-                callback(error: nil)
-                
-            case .Failure(let error):
+            case .success( _):
+                callback(nil)
+            case .failure(let error):
                 print(error)
-                callback(error: error)
+                callback(error)
             }
         }
     }
@@ -171,7 +163,7 @@ extension ListDataManager: ListDataManagerInputProtocol {
         // write new ones
         for project in projects {
             let projectEntity = ProjectEntity(project: project)
-            realm.addWithNotification(projectEntity, update: false)
+            realm.add(projectEntity, update: false)
         }
         
         try! realm.commitWrite()

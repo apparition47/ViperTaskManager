@@ -11,8 +11,8 @@
 import UIKit
 
 protocol AddRouterInputProtocol: class {
-    func closeAddViewController(viewController viewController: UIViewController)
-    func presentDetailViewController(fromViewController fromViewController: UIViewController, task: Task)
+    func closeAddViewController(viewController: UIViewController)
+    func presentDetailViewController(fromViewController: UIViewController, task: Task)
     
     var detailAssembler: DetailAssembler! { get set }
 }
@@ -25,21 +25,21 @@ class AddRouter: AddRouterInputProtocol {
 
     var detailAssembler: DetailAssembler!
     
-    func closeAddViewController(viewController viewController: UIViewController) {
-        let idiom = UIDevice.currentDevice().userInterfaceIdiom
+    func closeAddViewController(viewController: UIViewController) {
+        let idiom = UIDevice.current.userInterfaceIdiom
         switch idiom {
-        case .Phone:
-            viewController.navigationController!.dismissViewControllerAnimated(true, completion: nil)
+        case .phone:
+            viewController.navigationController!.dismiss(animated: true, completion: nil)
 
-        case .Pad:
-            viewController.navigationController!.popViewControllerAnimated(true)
+        case .pad:
+            viewController.navigationController!.popViewController(animated: true)
             
         default:
             fatalError("Device is not supported yet")
         }
     }
     
-    func presentDetailViewController(fromViewController fromViewController: UIViewController, task: Task) {
+    func presentDetailViewController(fromViewController: UIViewController, task: Task) {
         detailAssembler.presentDetailViewController(fromViewController: fromViewController, task: task)
     }
 }

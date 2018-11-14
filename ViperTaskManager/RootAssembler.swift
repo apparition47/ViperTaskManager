@@ -8,19 +8,18 @@
 
 import UIKit
 import Swinject
+import SwinjectStoryboard
 
-
-class RootAssembler: Assembler {
+class RootAssembler {
+    let assembler: Assembler
     
     init(parentAssembler: Assembler) {
-        try! super.init(assemblies: [RootContainer()], parentAssembler: parentAssembler)
+        assembler = Assembler([RootContainer()], parent: parentAssembler)
     }
-    
 }
 
 extension RootAssembler {
-    
-    func presentRootViewController(fromViewController fromViewController: UIViewController) {
+    func presentRootViewController(fromViewController: UIViewController) {
         guard let navigationController = fromViewController as? UINavigationController else  {
             return
         }
@@ -30,7 +29,6 @@ extension RootAssembler {
     }
     
     func storyboard() -> SwinjectStoryboard {
-        return SwinjectStoryboard.create(name: "Root", bundle: NSBundle.mainBundle(), container: resolver)
+        return SwinjectStoryboard.create(name: "Root", bundle: Bundle.main, container: assembler.resolver)
     }
-    
 }

@@ -11,7 +11,7 @@ import Swinject
 
 
 protocol DetailRouterInputProtocol: class {
-    func dismissDetailViewController(viewController viewController: UIViewController)
+    func dismissDetailViewController(viewController: UIViewController)
 }
 
 protocol DetailParentRouterProtocol: class {
@@ -20,7 +20,7 @@ protocol DetailParentRouterProtocol: class {
 
 class DetailRouter: DetailRouterInputProtocol {
     
-    func dismissDetailViewController(viewController viewController: UIViewController) {
-        viewController.dismissViewControllerAnimated(true, completion: nil)
+    func dismissDetailViewController(viewController: UIViewController) {
+        viewController.dismiss(animated: true, completion: nil)
     }
 }

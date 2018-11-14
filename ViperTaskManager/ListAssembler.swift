@@ -8,36 +8,36 @@
 
 import UIKit
 import Swinject
+import SwinjectStoryboard
 
-
-class ListAssembler: Assembler {
-
-    required init(parentAssembler: Assembler) {
-        try! super.init(assemblies: [ListContainer()], parentAssembler: parentAssembler)
+class ListAssembler {
+    let assembler: Assembler
+    
+    init(parentAssembler: Assembler) {
+        assembler = Assembler([ListContainer()], parent: parentAssembler)
     }
 }
 
 extension ListAssembler {
-    
-    func presentListViewController(fromViewController fromViewController: UIViewController) {
-        let viewController = storyboard().instantiateViewControllerWithIdentifier("ListTableViewControllerID") as! ListTableViewController
+    func presentListViewController(fromViewController: UIViewController) {
+        let viewController = storyboard().instantiateViewController(withIdentifier: "ListTableViewControllerID") as! ListTableViewController
         
         let navigationController = UINavigationController(rootViewController: viewController)
 
-        let idiom = UIDevice.currentDevice().userInterfaceIdiom
+        let idiom = UIDevice.current.userInterfaceIdiom
         switch idiom {
-        case .Phone:
-            fromViewController.presentViewController(navigationController, animated: true, completion: nil)
+        case .phone:
+            fromViewController.present(navigationController, animated: true, completion: nil)
             
-        case .Pad:
+        case .pad:
             let splitViewController = UISplitViewController()
             let detailNavigationController = UINavigationController()
             splitViewController.viewControllers = [navigationController, detailNavigationController]
             
             splitViewController.presentsWithGesture = false
-            splitViewController.preferredDisplayMode = .AllVisible
+            splitViewController.preferredDisplayMode = .allVisible
 
-            fromViewController.presentViewController(splitViewController, animated: true, completion: nil)
+            fromViewController.present(splitViewController, animated: true, completion: nil)
             
         default:
             fatalError("Device is not supported yet")
@@ -45,7 +45,6 @@ extension ListAssembler {
     }
     
     func storyboard() -> UIStoryboard {
-        return SwinjectStoryboard.create(name: "List", bundle: NSBundle.mainBundle(), container: resolver)
+        return SwinjectStoryboard.create(name: "List", bundle: Bundle.main, container: assembler.resolver)
     }
-    
 }

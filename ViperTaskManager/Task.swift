@@ -13,17 +13,17 @@ struct Task {
     let taskId: String
     let projectId: String
     let title: String
-    let deadline: NSDate
+    let deadline: Date
     let completed: Bool
 }
 
 
 class TaskEntity: Object {
-    dynamic var taskId: String = ""
-    dynamic var projectId: String = ""
-    dynamic var title: String = "New Task"
-    dynamic var deadline: NSDate = NSDate(timeIntervalSince1970: 0)
-    dynamic var completed: Bool = false
+    @objc dynamic var taskId: String = ""
+    @objc dynamic var projectId: String = ""
+    @objc dynamic var title: String = "New Task"
+    @objc dynamic var deadline: Date = Date(timeIntervalSince1970: 0)
+    @objc dynamic var completed: Bool = false
     
     override static func primaryKey() -> String? {
         return "taskId"

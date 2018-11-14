@@ -11,10 +11,9 @@
 import UIKit
 import Swinject
 
-class DetailContainer: AssemblyType {
-
+class DetailContainer: Assembly {
     func assemble(container: Container) {
-        container.registerForStoryboard(DetailViewController.self) { (r, c) -> () in
+        container.storyboardInitCompleted(DetailViewController.self) { (r, c) -> () in
             container.register(DetailPresenterProtocol.self) { [weak c] r in
                 guard let c = c else { fatalError("Contoller is nil") }
 

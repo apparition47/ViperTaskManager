@@ -12,9 +12,9 @@ import Swinject
 
 protocol ListRouterInputProtocol: class {
 
-    func presentDetailViewController(fromViewController fromViewController: UIViewController, project: Project)
+    func presentDetailViewController(fromViewController: UIViewController, project: Project)
     
-    func dismissListViewController(viewController viewController: UIViewController)
+    func dismissListViewController(viewController: UIViewController)
     
     var addAssembler: AddAssembler! { get set }
 }
@@ -28,11 +28,11 @@ class ListRouter: ListRouterInputProtocol {
     var addAssembler: AddAssembler!
     
    
-    func dismissListViewController(viewController viewController: UIViewController) {
-        viewController.dismissViewControllerAnimated(true, completion: nil)
+    func dismissListViewController(viewController: UIViewController) {
+        viewController.dismiss(animated: true, completion: nil)
     }
 
-    func presentDetailViewController(fromViewController fromViewController: UIViewController, project: Project) {
+    func presentDetailViewController(fromViewController: UIViewController, project: Project) {
         addAssembler.presentAddViewController(fromViewController: fromViewController, project: project)
     }
 }

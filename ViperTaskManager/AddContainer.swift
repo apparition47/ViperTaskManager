@@ -11,12 +11,11 @@
 import UIKit
 import Swinject
 
-class AddContainer: AssemblyType {
-    
+class AddContainer: Assembly {
     func assemble(container: Container) {
-        container.registerForStoryboard(AddTableViewController.self) { (r, c) -> () in
+        container.storyboardInitCompleted(AddTableViewController.self) { (r, c) -> () in
             container.register(AddPresenterProtocol.self) { [weak c] r in
-                guard let c = c else { fatalError("Contoller is nil") }
+                guard let c = c else { fatalError("Controller is nil") }
                 
                 let interface = c
                 let interactor = r.resolve(AddInteractorInputProtocol.self)!
@@ -50,11 +49,8 @@ class AddContainer: AssemblyType {
         }
         
         container.register(DetailAssembler.self) { r in
-            let parentAssembler = r.resolve(AddAssembler.self)!
+            let parentAssembler = r.resolve(AddAssembler.self)!.assembler
             return DetailAssembler(parentAssembler: parentAssembler)
         }
-
-        
     }
-    
 }

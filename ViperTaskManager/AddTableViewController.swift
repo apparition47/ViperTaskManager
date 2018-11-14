@@ -10,49 +10,47 @@ import UIKit
 
 
 class AddTableViewController: UITableViewController {
-    
     let kTaskTableViewCellReuseIdentifier = "TaskTableViewCellReuseIdentifier"
-    
     
     // MARK: VIPER Properties
     var presenter: AddPresenterProtocol!
-
+    
     var project: Project!
     var tasks: [Task] = []
     
     override var nibName: String? {
         get {
-            let classString = String(self.dynamicType)
+            let classString = String(describing: type(of: self))
             return classString
         }
     }
-    override var nibBundle: NSBundle? {
+    override var nibBundle: Bundle? {
         get {
-            return NSBundle.mainBundle()
+            return Bundle.main
         }
     }
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        tableView.registerNib(UINib(nibName: "TaskTableViewCell", bundle: NSBundle.mainBundle()), forCellReuseIdentifier: kTaskTableViewCellReuseIdentifier)
         
-        self.navigationController?.toolbarHidden = false
+        tableView.register(UINib(nibName: "TaskTableViewCell", bundle: Bundle.main), forCellReuseIdentifier: kTaskTableViewCellReuseIdentifier)
+        
+        self.navigationController?.isToolbarHidden = false
         
         self.navigationItem.rightBarButtonItems = []
-        self.navigationItem.rightBarButtonItems!.append(self.editButtonItem())
+        self.navigationItem.rightBarButtonItems!.append(self.editButtonItem)
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         self.title = project.name
         
         
-        self.presenter.fetchSortBy(project.projectId) { (sortBy) in
-            self.presenter.fetchTasks(self.project.projectId) { (result: [Task]?) -> Void in
-                self.displayTasks(result!, sortBy: sortBy)
+        self.presenter.fetchSortBy(projectId: project.projectId) { (sortBy) in
+            self.presenter.fetchTasks(projectId: self.project.projectId) { (result: [Task]?) -> Void in
+                self.displayTasks(result: result!, sortBy: sortBy)
             }
         }
     }
@@ -60,70 +58,70 @@ class AddTableViewController: UITableViewController {
     func displayTasks(result: [Task], sortBy: String) {
         let sortedTasks: [Task]
         if (sortBy == "title") {
-            sortedTasks = result.sort { $0.title < $1.title }
+            sortedTasks = result.sorted { $0.title < $1.title }
         } else {
-            sortedTasks = result.sort { $0.deadline.compare($1.deadline) == .OrderedAscending }
+            sortedTasks = result.sorted { $0.deadline.compare($1.deadline) == .orderedAscending }
         }
         
         self.tasks = sortedTasks
         self.tableView.reloadData()
     }
-
+    
     // MARK: - Table view data source
-
-    override func tableView(tableView: UITableView, estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return UITableViewAutomaticDimension
+    
+    override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
     }
-    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return UITableViewAutomaticDimension
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
     }
     
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
-
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.tasks.count
     }
-
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(kTaskTableViewCellReuseIdentifier, forIndexPath: indexPath) as! TaskTableViewCell
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: kTaskTableViewCellReuseIdentifier, for: indexPath) as! TaskTableViewCell
         cell.task = self.tasks[indexPath.row]
         return cell
     }
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let task = self.tasks[indexPath.row]
-
-        self.presenter.selectTask(task)
+        
+        self.presenter.selectTask(task: task)
     }
-
+    
     // Override to support conditional editing of the table view.
-    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         // Return false if you do not want the specified item to be editable.
         return true
     }
     
     // Override to support editing the table view.
-    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if editingStyle == .Delete {
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
             // Delete the row from the data source
             switch indexPath.section {
             case 0:
                 let task = self.tasks[indexPath.row]
-                self.presenter.removeTask(task) { (error) -> Void in
-                    if (error == nil) {
-                        self.tasks.removeAtIndex(indexPath.row)
-                        tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+                self.presenter.removeTask(task: task) { (error) -> Void in
+                    if error == nil {
+                        self.tasks.remove(at: indexPath.row)
+                        tableView.deleteRows(at: [indexPath], with: .fade)
                     } else {
                         print("delete task error")
                     }
                 }
-        
+                
             default:
                 fatalError("Wrong section")
             }
-        } else if editingStyle == .Insert {
+        } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
         }
     }
@@ -133,104 +131,104 @@ class AddTableViewController: UITableViewController {
     }
     
     @IBAction func sortBy(sender: AnyObject) {
-        self.presenter.fetchSortBy(project.projectId) { (result) in
+        self.presenter.fetchSortBy(projectId: project.projectId) { (result) in
             let alert = UIAlertController(title: "Sort By: \(result)",
-                                          message: "Tasks lists can be sorted by title or deadline.",
-                                          preferredStyle: UIAlertControllerStyle.Alert)
+                message: "Tasks lists can be sorted by title or deadline.",
+                preferredStyle: UIAlertController.Style.alert)
             
             let title = UIAlertAction(title: "title",
-                                      style: UIAlertActionStyle.Default) { (action: UIAlertAction) in
+                                      style: UIAlertAction.Style.default) { (action: UIAlertAction) in
                                         let newProject = Project(projectId: self.project.projectId, name: self.project.name, sortBy: "title", tasks: self.project.tasks)
-                                        self.presenter.updateProjectInPersistentStore(newProject)
-                                        self.displayTasks(self.project.tasks, sortBy: "title")
+                                        self.presenter.updateProjectInPersistentStore(project: newProject)
+                                        self.displayTasks(result: self.project.tasks, sortBy: "title")
                                         
             }
             
             let deadline = UIAlertAction(title: "deadline",
-                                         style: UIAlertActionStyle.Default) { (action: UIAlertAction) in
+                                         style: UIAlertAction.Style.default) { (action: UIAlertAction) in
                                             let newProject = Project(projectId: self.project.projectId, name: self.project.name, sortBy: "deadline", tasks: self.project.tasks)
-                                            self.presenter.updateProjectInPersistentStore(newProject)
-                                            self.displayTasks(self.project.tasks, sortBy: "deadline")
+                                            self.presenter.updateProjectInPersistentStore(project: newProject)
+                                            self.displayTasks(result: self.project.tasks, sortBy: "deadline")
             }
             
             let cancel = UIAlertAction(title: "Cancel",
-                                       style: UIAlertActionStyle.Cancel,
+                                       style: UIAlertAction.Style.cancel,
                                        handler: nil)
             
             alert.addAction(title)
             alert.addAction(deadline)
             alert.addAction(cancel)
             
-            self.presentViewController(alert, animated: true, completion: nil)
+            self.present(alert, animated: true, completion: nil)
         }
     }
-
+    
     @IBAction func editProjectName(sender: AnyObject) {
         let alert = UIAlertController(title: "New Project",
                                       message: "Type in a name",
-                                      preferredStyle: UIAlertControllerStyle.Alert)
+                                      preferredStyle: UIAlertController.Style.alert)
         
         let ok = UIAlertAction(title: "OK",
-                               style: UIAlertActionStyle.Default) { (action: UIAlertAction) in
+                               style: UIAlertAction.Style.default) { (action: UIAlertAction) in
                                 
-            if let alertTextField = alert.textFields?.first where alertTextField.text != nil {
-                
-                print("And the text is... \(alertTextField.text!)!")
-                
-                let newProject = Project(projectId: self.project.projectId, name: alertTextField.text!, sortBy: self.project.sortBy, tasks: self.project.tasks)
-                
-                self.presenter.updateProject(newProject, callback: { (result, error) in
-                    if (error == nil) {
-                        self.title = result?.name
-                    } else {
-                        print("failed to update project name")
-                    }
-                })
-            }
+                                if let alertTextField = alert.textFields?.first, alertTextField.text != nil {
+                                    
+                                    print("And the text is... \(alertTextField.text!)!")
+                                    
+                                    let newProject = Project(projectId: self.project.projectId, name: alertTextField.text!, sortBy: self.project.sortBy, tasks: self.project.tasks)
+                                    
+                                    self.presenter.updateProject(project: newProject, callback: { (result, error) in
+                                        if (error == nil) {
+                                            self.title = result?.name
+                                        } else {
+                                            print("failed to update project name")
+                                        }
+                                    })
+                                }
         }
         
         let cancel = UIAlertAction(title: "Cancel",
-                                   style: UIAlertActionStyle.Cancel,
+                                   style: UIAlertAction.Style.cancel,
                                    handler: nil)
         
-        alert.addTextFieldWithConfigurationHandler { (textField: UITextField) in
+        alert.addTextField { (textField: UITextField) in
             textField.placeholder = ""
         }
         
         alert.addAction(ok)
         alert.addAction(cancel)
         
-        self.presentViewController(alert, animated: true, completion: nil)
+        self.present(alert, animated: true, completion: nil)
     }
     
     @IBAction func addTask(sender: AnyObject) {
         let alert = UIAlertController(title: "New Task",
                                       message: "Type in a title",
-                                      preferredStyle: UIAlertControllerStyle.Alert)
+                                      preferredStyle: UIAlertController.Style.alert)
         
         let ok = UIAlertAction(title: "OK",
-                               style: UIAlertActionStyle.Default) { (action: UIAlertAction) in
+                               style: UIAlertAction.Style.default) { (action: UIAlertAction) in
                                 
-                                if let alertTextField = alert.textFields?.first where alertTextField.text != nil {
+                                if let alertTextField = alert.textFields?.first, alertTextField.text != nil {
                                     
                                     print("And the text is... \(alertTextField.text!)!")
                                     // presents detail view if successful
-                                    self.presenter.addNewTask(self.project.projectId, title: alertTextField.text!)
+                                    self.presenter.addNewTask(projectId: self.project.projectId, title: alertTextField.text!)
                                 }
         }
         
         let cancel = UIAlertAction(title: "Cancel",
-                                   style: UIAlertActionStyle.Cancel,
+                                   style: UIAlertAction.Style.cancel,
                                    handler: nil)
         
-        alert.addTextFieldWithConfigurationHandler { (textField: UITextField) in
+        alert.addTextField { (textField: UITextField) in
             textField.placeholder = ""
         }
         
         alert.addAction(ok)
         alert.addAction(cancel)
         
-        self.presentViewController(alert, animated: true, completion: nil)
+        self.present(alert, animated: true, completion: nil)
     }
 }
 

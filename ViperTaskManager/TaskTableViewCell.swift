@@ -13,10 +13,10 @@ class TaskTableViewCell: UITableViewCell {
     var task: Task? {
         didSet {
             if let task = task {
-                let dateFormatter = NSDateFormatter()
-                dateFormatter.dateStyle = .MediumStyle
-                dateFormatter.timeStyle = .MediumStyle
-                deadlineLabel.text = dateFormatter.stringFromDate(task.deadline)
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateStyle = .medium
+                dateFormatter.timeStyle = .medium
+                deadlineLabel.text = dateFormatter.string(from: task.deadline)
                 
                 titleLabel.text = task.title
                 progressLabel.text = task.completed ? "finished" : "unfinished"
@@ -37,11 +37,11 @@ class TaskTableViewCell: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
         let selectedBackgroundView = UIView(frame: CGRect.zero)
-        selectedBackgroundView.backgroundColor = MaterialColor.lightBlueColor()
+        selectedBackgroundView.backgroundColor = MaterialColor.lightBlue
         self.selectedBackgroundView = selectedBackgroundView
     }
 
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state

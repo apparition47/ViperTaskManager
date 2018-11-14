@@ -8,38 +8,37 @@
 
 import UIKit
 import Swinject
+import SwinjectStoryboard
 
-
-class DetailAssembler: Assembler {
-
-    required init(parentAssembler: Assembler) {
-        try! super.init(assemblies: [DetailContainer()], parentAssembler: parentAssembler)
+class DetailAssembler {
+    private let assembler: Assembler
+    
+    init(parentAssembler: Assembler) {
+        assembler = Assembler([DetailContainer()], parent: parentAssembler)
     }
 }
 
 extension DetailAssembler {
-    
-
-    func presentDetailViewController(fromViewController fromViewController: UIViewController, task: Task) {
-        let viewController = storyboard().instantiateViewControllerWithIdentifier("DetailViewControllerID") as! DetailViewController
+    func presentDetailViewController(fromViewController: UIViewController, task: Task) {
+        let viewController = storyboard().instantiateViewController(withIdentifier: "DetailViewControllerID") as! DetailViewController
         viewController.task = task
         
         let navigationController = UINavigationController(rootViewController: viewController)
         
-        let idiom = UIDevice.currentDevice().userInterfaceIdiom
+        let idiom = UIDevice.current.userInterfaceIdiom
         switch idiom {
-        case .Phone:
-            fromViewController.presentViewController(navigationController, animated: true, completion: nil)
+        case .phone:
+            fromViewController.present(navigationController, animated: true, completion: nil)
             
-        case .Pad:
+        case .pad:
             let splitViewController = UISplitViewController()
             let detailNavigationController = UINavigationController()
             splitViewController.viewControllers = [navigationController, detailNavigationController]
             
             splitViewController.presentsWithGesture = false
-            splitViewController.preferredDisplayMode = .AllVisible
+            splitViewController.preferredDisplayMode = .allVisible
             
-            fromViewController.presentViewController(splitViewController, animated: true, completion: nil)
+            fromViewController.present(splitViewController, animated: true, completion: nil)
             
         default:
             fatalError("Device is not supported yet")
@@ -47,8 +46,6 @@ extension DetailAssembler {
     }
     
     func storyboard() -> SwinjectStoryboard {
-        return SwinjectStoryboard.create(name: "List", bundle: NSBundle.mainBundle(), container: resolver)
+        return SwinjectStoryboard.create(name: "List", bundle: Bundle.main, container: assembler.resolver)
     }
-    
-
 }

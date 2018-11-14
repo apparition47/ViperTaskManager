@@ -13,7 +13,7 @@ import Swinject
 
 
 protocol RootRouterInputProtocol: class {
-    func openListViewController(fromViewController fromViewController: UIViewController)
+    func openListViewController(fromViewController: UIViewController)
     
     var listAssembler: ListAssembler! { get set }
 }
@@ -26,7 +26,7 @@ class RootRouter: RootRouterInputProtocol {
     
     var listAssembler: ListAssembler!
     
-    func openListViewController(fromViewController fromViewController: UIViewController) {
+    func openListViewController(fromViewController: UIViewController) {
         listAssembler.presentListViewController(fromViewController: fromViewController)
     }
     

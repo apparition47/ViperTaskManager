@@ -8,11 +8,9 @@
 
 import UIKit
 
-
 class RouterHelper {
-    
     class func navigationController() -> UINavigationController {
-        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let delegate = UIApplication.shared.delegate as! AppDelegate
         let rootNVC = delegate.window!.rootViewController as! UINavigationController
         return rootNVC
     }

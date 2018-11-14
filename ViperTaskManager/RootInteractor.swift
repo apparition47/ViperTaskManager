@@ -11,9 +11,7 @@
 import Foundation
 
 protocol RootInteractorInputProtocol: class {
-    
-    weak var presenter: RootInteractorOutputProtocol! { get set }
-    
+    var presenter: RootInteractorOutputProtocol! { get set }
 }
 
 protocol RootInteractorOutputProtocol: class {
@@ -21,9 +19,7 @@ protocol RootInteractorOutputProtocol: class {
 }
 
 class RootInteractor {
-
     weak var presenter: RootInteractorOutputProtocol!
-    
 }
 
 extension RootInteractor: RootInteractorInputProtocol {

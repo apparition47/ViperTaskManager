@@ -9,13 +9,11 @@
 import UIKit
 import Swinject
 
-
-class ListContainer: AssemblyType {
-
+class ListContainer: Assembly {
     func assemble(container: Container) {
-        container.registerForStoryboard(ListTableViewController.self) { (r, c) -> () in
+        container.storyboardInitCompleted(ListTableViewController.self) { (r, c) -> () in
             container.register(ListPresenterProtocol.self) { [weak c] r in
-                guard let c = c else { fatalError("Contoller is nil") }
+                guard let c = c else { fatalError("Controller is nil") }
                 
                 let interface = c
                 let interactor = r.resolve(ListInteractorInputProtocol.self)!
@@ -50,9 +48,8 @@ class ListContainer: AssemblyType {
         }
         
         container.register(AddAssembler.self) { r in
-            let parentAssembler = r.resolve(ListAssembler.self)!
+            let parentAssembler = r.resolve(ListAssembler.self)!.assembler
             return AddAssembler(parentAssembler: parentAssembler)
         }
-
     }
 }

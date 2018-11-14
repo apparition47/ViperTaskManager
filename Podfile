@@ -1,29 +1,25 @@
-# Uncomment this line to define a global platform for your project
-platform :ios, '8.0'
-# Uncomment this line if you're using Swift
+source 'https://github.com/CocoaPods/Specs.git'
+platform :ios, '9.0'
 use_frameworks!
 
 target 'ViperTaskManager' do
-
-
-pod 'Swinject', '~> 1.1.5'
-pod 'Alamofire', '~> 3.5.0'
-
-pod 'RealmSwift', '~> 0.98.5'
-pod 'SwiftFetchedResultsController', '~> 3.0.1'
-
-pod 'SwiftyJSON', '~> 2.3.2'
+pod 'Swinject'
+pod 'SwinjectStoryboard'
+pod 'Alamofire', '~> 4.7.1'
+pod 'Realm', '~> 3.11.1'
+pod 'RealmSwift', '~> 3.11.1'
+pod "RBQFetchedResultsController", :git => 'https://github.com/DeveloperLY/RBQFetchedResultsController.git'
+pod 'SwiftFetchedResultsController', :git => 'https://github.com/DeveloperLY/RBQFetchedResultsController.git'
+pod 'SwiftyJSON', '~> 4.2.0'
 
 # Will used soon
-pod 'SnapKit', '~> 0.22.0'
-
+pod 'SnapKit', '~> 4.0.0'
 end
 
-# Use Legacy Swift Language Version 2.3
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |configuration|
-      configuration.build_settings['SWIFT_VERSION'] = "2.3"
+      configuration.build_settings['SWIFT_VERSION'] = "4.2"
     end
   end
 end

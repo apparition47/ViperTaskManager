@@ -11,10 +11,9 @@
 import UIKit
 import Swinject
 
-class RootContainer: AssemblyType {
-    
+class RootContainer: Assembly {
     func assemble(container: Container) {
-        container.registerForStoryboard(RootViewController.self) { (r, c) -> () in
+        container.storyboardInitCompleted(RootViewController.self) { (r, c) -> () in
             container.register(RootPresenterProtocol.self) { [weak c] r in
                 guard let c = c else { fatalError("Contoller is nil") }
 
@@ -41,9 +40,8 @@ class RootContainer: AssemblyType {
         }
         
         container.register(ListAssembler.self) { r in
-            let parentAssembler = r.resolve(RootAssembler.self)!
+            let parentAssembler = r.resolve(RootAssembler.self)!.assembler
             return ListAssembler(parentAssembler: parentAssembler)
         }
     }
-    
 }

@@ -11,13 +11,15 @@
 import Foundation
 import Swinject
 
-class ServiceLocatorAssembler: Assembler {
+class ServiceLocatorAssembler {
+    let assembler: Assembler
     
     init() {
         let container = Container(parent: nil)
-        super.init(container: container)
-        
-        self.applyAssembly(ServiceLocatorContainer())
+//        super.init(container: container)
+//        self.applyAssembly(ServiceLocatorContainer())
+        assembler = Assembler(container: container)
+        assembler.apply(assembly: ServiceLocatorContainer())
     }
     
 }

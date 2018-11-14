@@ -10,30 +10,31 @@
 
 import UIKit
 import Swinject
+import SwinjectStoryboard
 
-class AddAssembler: Assembler {
+class AddAssembler {
+    let assembler: Assembler
     
     init(parentAssembler: Assembler) {
-        try! super.init(assemblies: [AddContainer()], parentAssembler: parentAssembler)
+        assembler = Assembler([AddContainer()], parent: parentAssembler)
     }
 }
 
 extension AddAssembler {
-    
-    func presentAddViewController(fromViewController fromViewController: UIViewController, project: Project?) {
-        let viewController = storyboard().instantiateViewControllerWithIdentifier("AddTableViewControllerID") as! AddTableViewController
+    func presentAddViewController(fromViewController: UIViewController, project: Project?) {
+        let viewController = storyboard().instantiateViewController(withIdentifier: "AddTableViewControllerID") as! AddTableViewController
         viewController.project = project
         viewController.tasks = project!.tasks
         
         viewController.presenter.delegate = fromViewController as? AddViewControllerDelegate
     
-        let idiom = UIDevice.currentDevice().userInterfaceIdiom
+        let idiom = UIDevice.current.userInterfaceIdiom
         switch idiom {
-        case .Phone:
+        case .phone:
             let navigationController = UINavigationController(rootViewController: viewController)
-            fromViewController.presentViewController(navigationController, animated: true, completion: nil)
+            fromViewController.present(navigationController, animated: true, completion: nil)
             
-        case .Pad:
+        case .pad:
             // TODO split screen
             fromViewController.navigationController!.pushViewController(viewController, animated: true)
         
@@ -43,6 +44,6 @@ extension AddAssembler {
     }
     
     func storyboard() -> SwinjectStoryboard {
-        return SwinjectStoryboard.create(name: "List", bundle: NSBundle.mainBundle(), container: resolver)
+        return SwinjectStoryboard.create(name: "List", bundle: Bundle.main, container: assembler.resolver)
     }
 }

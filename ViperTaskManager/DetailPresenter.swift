@@ -38,10 +38,8 @@ class DetailPresenter {
 
 extension DetailPresenter: DetailPresenterProtocol {
     
-
-    
     func done(task: Task) {
-        self.interactor.updateTask(task) { (result, error) -> Void in
+        self.interactor.updateTask(task: task) { (result, error) -> Void in
             if (error != nil) {
                 print("error updating task")
             }

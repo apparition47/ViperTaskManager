@@ -11,13 +11,11 @@
 import Foundation
 import Swinject
 
-class ServiceLocatorContainer: AssemblyType {
-    
+class ServiceLocatorContainer: Assembly {
     func assemble(container: Container) {
         container.register(RootAssembler.self) { r in
-            let delegete = (UIApplication.sharedApplication().delegate as! AppDelegate)
-            return RootAssembler(parentAssembler: delegete.serviceLocatorAssembler)
+            let delegate = UIApplication.shared.delegate as! AppDelegate
+            return RootAssembler(parentAssembler: delegate.serviceLocatorAssembler.assembler)
         }
     }
-    
 }

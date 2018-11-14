@@ -19,13 +19,13 @@ class RootViewController: UIViewController {
 
     override var nibName: String? {
         get {
-            let classString = String(self.dynamicType)
+            let classString = String(describing: type(of: self))
             return classString
         }
     }
-    override var nibBundle: NSBundle? {
+    override var nibBundle: Bundle? {
         get {
-            return NSBundle.mainBundle()
+            return Bundle.main
         }
     }
     
@@ -34,10 +34,10 @@ class RootViewController: UIViewController {
 
         self.navigationController!.setNavigationBarHidden(true, animated: false)
         
-        activityIndicatorView.color = MaterialColor.cyanColor()
+        activityIndicatorView.color = MaterialColor.cyan
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         // Imitation of login request or fetch some data

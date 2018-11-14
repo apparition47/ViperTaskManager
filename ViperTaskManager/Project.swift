@@ -13,7 +13,7 @@ struct Project {
     let projectId: String
     let name: String
     let sortBy: String
-    let tasks: Array<Task>
+    let tasks: [Task]
     
     func getUnfinishedTaskCount() -> Int {
         var count = 0;
@@ -28,9 +28,9 @@ struct Project {
 
 
 class ProjectEntity: Object {
-    dynamic var projectId: String = ""
-    dynamic var name: String = "New Project"
-    dynamic var sortBy: String = "title"
+    @objc dynamic var projectId: String = ""
+    @objc dynamic var name: String = "New Project"
+    @objc dynamic var sortBy: String = "title"
     let tasks: List<TaskEntity> = List<TaskEntity>()
     
     override static func primaryKey() -> String? {
@@ -43,6 +43,6 @@ class ProjectEntity: Object {
         self.projectId = project.projectId
         self.name = project.name
         self.sortBy = project.sortBy
-        project.tasks.map{ self.tasks.append(TaskEntity(task:$0)) }
+        project.tasks.forEach { self.tasks.append(TaskEntity(task:$0)) }
     }
 }
